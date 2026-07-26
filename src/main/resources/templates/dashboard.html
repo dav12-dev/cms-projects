@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dashboard - CMS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Global Styles */
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .main-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 30px 20px;
+            min-height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .sidebar .brand {
+            color: white;
+            font-size: 28px;
+            font-weight: 700;
+            text-align: center;
+            padding-bottom: 30px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 30px;
+        }
+
+        .sidebar .brand span {
+            color: #ffd700;
+        }
+
+        .sidebar .nav-item {
+            margin-bottom: 8px;
+        }
+
+        .sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.7);
+            padding: 12px 18px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sidebar .nav-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .sidebar .nav-link.active {
+            background: rgba(255, 255, 255, 0.25);
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .sidebar .nav-link i {
+            width: 24px;
+            text-align: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            padding: 30px;
+            width: calc(100% - 280px);
+            min-height: 100vh;
+        }
+
+        /* Glass Cards */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.2);
+        }
+
+        .glass-card .card-title {
+            color: white;
+            font-weight: 600;
+        }
+
+        /* Stat Cards - Clickable */
+        .stat-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 25px;
+            color: white;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            display: block;
+        }
+
+        .stat-card:hover {
+            transform: scale(1.05);
+            background: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-card .stat-icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+        }
+
+        .stat-card .stat-number {
+            font-size: 36px;
+            font-weight: 700;
+        }
+
+        .stat-card .stat-label {
+            font-size: 16px;
+            opacity: 0.8;
+        }
+
+        .stat-card.color-1 { background: rgba(102, 126, 234, 0.4); }
+        .stat-card.color-2 { background: rgba(46, 204, 113, 0.4); }
+        .stat-card.color-3 { background: rgba(241, 196, 15, 0.4); }
+        .stat-card.color-4 { background: rgba(231, 76, 60, 0.4); }
+
+        /* Glass Buttons */
+        .btn-glass {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            width: 100%;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+        }
+
+        .btn-glass:hover {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+            transform: scale(1.02);
+        }
+
+        .btn-glass.primary { background: rgba(102, 126, 234, 0.6); }
+        .btn-glass.success { background: rgba(46, 204, 113, 0.6); }
+        .btn-glass.warning { background: rgba(241, 196, 15, 0.6); }
+
+        .top-bar {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 15px 25px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .top-bar h1 {
+            color: white;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .top-bar .user-info {
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .top-bar .user-info .logout-btn {
+            color: #ff6b6b;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .top-bar .user-info .logout-btn:hover {
+            color: #ff4757;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 80px;
+                padding: 20px 10px;
+            }
+            .sidebar .brand { font-size: 18px; }
+            .sidebar .nav-link span { display: none; }
+            .main-content { margin-left: 80px; width: calc(100% - 80px); padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+<div class="main-wrapper">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="brand">📝 <span>CMS</span></div>
+        <nav>
+            <div class="nav-item"><a href="/dashboard" class="nav-link active"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></div>
+            <div class="nav-item"><a href="/articles" class="nav-link"><i class="fas fa-newspaper"></i> <span>Articles</span></a></div>
+            <div class="nav-item"><a href="/categories" class="nav-link"><i class="fas fa-folder"></i> <span>Categories</span></a></div>
+            <div class="nav-item"><a href="/users" class="nav-link"><i class="fas fa-users"></i> <span>Users</span></a></div>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <h1>📊 Dashboard</h1>
+            <div class="user-info">
+                <i class="fas fa-user-circle" style="font-size:24px;"></i>
+                <span>Admin</span>
+                <a href="/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+        </div>
+
+        <!-- Stats - CLICKABLE -->
+        <div class="row mb-4">
+            <div class="col-md-3 mb-3">
+                <a href="/users" class="stat-card color-1">
+                    <div class="stat-icon"><i class="fas fa-users"></i></div>
+                    <div class="stat-number" id="userCount">0</div>
+                    <div class="stat-label">Total Users</div>
+                </a>
+            </div>
+            <div class="col-md-3 mb-3">
+                <a href="/articles" class="stat-card color-2">
+                    <div class="stat-icon"><i class="fas fa-newspaper"></i></div>
+                    <div class="stat-number" id="articleCount">0</div>
+                    <div class="stat-label">Total Articles</div>
+                </a>
+            </div>
+            <div class="col-md-3 mb-3">
+                <a href="/categories" class="stat-card color-3">
+                    <div class="stat-icon"><i class="fas fa-folder"></i></div>
+                    <div class="stat-number" id="categoryCount">0</div>
+                    <div class="stat-label">Categories</div>
+                </a>
+            </div>
+            <div class="col-md-3 mb-3">
+                <a href="#" class="stat-card color-4">
+                    <div class="stat-icon"><i class="fas fa-comments"></i></div>
+                    <div class="stat-number">0</div>
+                    <div class="stat-label">Comments</div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <div class="glass-card">
+                    <h5 class="card-title"><i class="fas fa-bolt"></i> Quick Actions</h5>
+                    <div class="d-grid gap-3 mt-3">
+                        <a href="/articles" class="btn-glass primary"><i class="fas fa-plus"></i> Create New Article</a>
+                        <a href="/users" class="btn-glass success"><i class="fas fa-user-cog"></i> Manage Users</a>
+                        <a href="/categories" class="btn-glass warning"><i class="fas fa-folder-plus"></i> Manage Categories</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <div class="glass-card">
+                    <h5 class="card-title"><i class="fas fa-clock"></i> Recent Activity</h5>
+                    <p class="text-white-50 mt-3">No recent activity yet.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    fetch('/api/users/all').then(r => r.json()).then(data => {
+        document.getElementById('userCount').textContent = data.length;
+    }).catch(() => document.getElementById('userCount').textContent = '?');
+
+    fetch('/api/articles').then(r => r.json()).then(data => {
+        document.getElementById('articleCount').textContent = data.length;
+    }).catch(() => document.getElementById('articleCount').textContent = '?');
+
+    fetch('/api/categories').then(r => r.json()).then(data => {
+        document.getElementById('categoryCount').textContent = data.length;
+    }).catch(() => document.getElementById('categoryCount').textContent = '?');
+</script>
+</body>
+</html>
