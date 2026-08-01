@@ -6,20 +6,19 @@
     <title>Articles - CMS</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="/css/dark-mode.css">
+    <script src="/js/dark-mode.js" defer></script>
+    <script src="/js/theme-switcher.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.3/tinymce.min.js"></script>
     <style>
-        body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+        body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         .main-wrapper { display: flex; min-height: 100vh; }
-
         .sidebar {
             width: 280px;
-            background: rgba(255, 255, 255, 0.15);
+            background: rgba(255,255,255,0.12);
             backdrop-filter: blur(20px);
-            border-right: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 30px 20px;
+            border-right: 1px solid rgba(255,255,255,0.12);
+            padding: 25px 18px;
             min-height: 100vh;
             position: fixed;
             left: 0;
@@ -27,153 +26,230 @@
             height: 100vh;
             overflow-y: auto;
             z-index: 1000;
+            transition: all 0.3s ease;
         }
-        .sidebar .brand { color: white; font-size: 28px; font-weight: 700; text-align: center; padding-bottom: 30px; border-bottom: 1px solid rgba(255,255,255,0.2); margin-bottom: 30px; }
+        [data-theme="dark"] .sidebar { background: rgba(0,0,0,0.4); border-right: 1px solid rgba(255,255,255,0.05); }
+        .sidebar .brand { color: white; font-size: 26px; font-weight: 700; text-align: center; padding-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 25px; }
         .sidebar .brand span { color: #ffd700; }
-        .sidebar .nav-item { margin-bottom: 8px; }
-        .sidebar .nav-link { color: rgba(255,255,255,0.7); padding: 12px 18px; border-radius: 12px; transition: all 0.3s ease; font-weight: 500; display: flex; align-items: center; gap: 12px; }
-        .sidebar .nav-link:hover { background: rgba(255,255,255,0.2); color: white; transform: translateX(5px); }
-        .sidebar .nav-link.active { background: rgba(255,255,255,0.25); color: white; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
-        .sidebar .nav-link i { width: 24px; text-align: center; }
-
-        .main-content { margin-left: 280px; padding: 30px; width: calc(100% - 280px); min-height: 100vh; }
-
-        .glass-card {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 20px;
-            padding: 25px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
+        .sidebar .nav-item { margin-bottom: 4px; }
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.7);
+            padding: 10px 16px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
         }
-        .glass-card .card-title { color: white; font-weight: 600; }
-        .glass-card label { color: white; font-weight: 500; }
+        .sidebar .nav-link:hover { background: rgba(255,255,255,0.12); color: white; transform: translateX(4px); }
+        .sidebar .nav-link.active { background: rgba(255,255,255,0.18); color: white; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
+        .sidebar .nav-link i { width: 22px; text-align: center; }
+
+        .main-content { margin-left: 280px; padding: 25px 30px; width: calc(100% - 280px); min-height: 100vh; }
+        @media (max-width: 768px) {
+            .sidebar { width: 75px; padding: 15px 10px; }
+            .sidebar .brand { font-size: 18px; }
+            .sidebar .nav-link span { display: none; }
+            .sidebar .nav-link { justify-content: center; padding: 10px; }
+            .main-content { margin-left: 75px; width: calc(100% - 75px); padding: 15px; }
+        }
 
         .top-bar {
-            background: rgba(255, 255, 255, 0.15);
+            background: rgba(255,255,255,0.1);
             backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 20px;
-            padding: 15px 25px;
-            margin-bottom: 30px;
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 16px;
+            padding: 12px 24px;
+            margin-bottom: 25px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        .top-bar h1 { color: white; font-weight: 700; margin: 0; }
+        .top-bar h1 { color: white; font-weight: 700; margin: 0; font-size: 22px; }
         .top-bar .user-info { color: white; display: flex; align-items: center; gap: 15px; }
-        .top-bar .user-info .logout-btn { color: #ff6b6b; text-decoration: none; font-weight: 500; }
+        .top-bar .user-info .logout-btn { color: #ff6b6b; text-decoration: none; font-weight: 500; font-size: 14px; transition: all 0.3s ease; }
         .top-bar .user-info .logout-btn:hover { color: #ff4757; }
 
+        .glass-card {
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 22px 25px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        .glass-card:hover { box-shadow: 0 12px 48px rgba(0,0,0,0.15); }
+        .glass-card .card-title { color: white; font-weight: 600; font-size: 17px; }
+        .glass-card label { color: white; font-weight: 500; font-size: 14px; }
+
         .form-control, .form-select {
-            background: rgba(255,255,255,0.15);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.2);
-            color: white;
+            background: rgba(255,255,255,0.12) !important;
+            border: 1px solid rgba(255,255,255,0.2) !important;
+            color: white !important;
             border-radius: 12px;
-            padding: 12px 18px;
+            padding: 12px 16px;
+            font-size: 14px;
+            transition: all 0.3s ease;
         }
         .form-control::placeholder { color: rgba(255,255,255,0.5); }
         .form-control:focus, .form-select:focus {
-            background: rgba(255,255,255,0.25);
-            color: white;
-            box-shadow: 0 0 20px rgba(255,255,255,0.1);
-            border-color: rgba(255,255,255,0.4);
+            background: rgba(255,255,255,0.2) !important;
+            border-color: rgba(255,255,255,0.5) !important;
+            box-shadow: 0 0 30px rgba(255,255,255,0.05);
         }
         .form-select option { color: #333; }
 
         .btn-glass {
-            background: rgba(255, 255, 255, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.15);
             color: white;
-            padding: 12px 25px;
+            padding: 10px 22px;
             border-radius: 30px;
             font-weight: 600;
             transition: all 0.3s ease;
+            font-size: 14px;
         }
-        .btn-glass:hover { background: rgba(255,255,255,0.3); color: white; transform: scale(1.02); }
-        .btn-glass.success { background: rgba(46, 204, 113, 0.6); }
-        .btn-glass.primary { background: rgba(102, 126, 234, 0.6); }
-        .btn-glass.warning { background: rgba(241, 196, 15, 0.6); }
-        .btn-glass.danger { background: rgba(231, 76, 60, 0.6); }
+        .btn-glass:hover { background: rgba(255,255,255,0.25); color: white; transform: translateY(-2px) scale(1.02); }
+        .btn-glass.success { background: rgba(46,204,113,0.5); }
+        .btn-glass.primary { background: rgba(102,126,234,0.5); }
+        .btn-glass.warning { background: rgba(241,196,15,0.5); }
+        .btn-glass.danger { background: rgba(231,76,60,0.5); }
+        .btn-glass.secondary { background: rgba(149,165,166,0.4); }
+        .btn-glass.info { background: rgba(52,152,219,0.5); }
 
-        .table {
-            color: white;
-        }
+        .table { color: white; }
         .table thead th {
-            border-bottom: 1px solid rgba(255,255,255,0.2);
+            border-bottom: 1px solid rgba(255,255,255,0.15);
             color: rgba(255,255,255,0.8);
             font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 12px 8px;
         }
         .table tbody td {
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
             vertical-align: middle;
+            padding: 10px 8px;
         }
-        .table tbody tr:hover {
-            background: rgba(255,255,255,0.05);
-        }
+        .table tbody tr:hover { background: rgba(255,255,255,0.04); }
+        .badge-success { background: rgba(46,204,113,0.8); color: white; padding: 4px 12px; border-radius: 20px; font-size: 11px; }
+        .badge-warning { background: rgba(241,196,15,0.8); color: white; padding: 4px 12px; border-radius: 20px; font-size: 11px; }
+        .badge-secondary { background: rgba(149,165,166,0.6); color: white; padding: 4px 12px; border-radius: 20px; font-size: 11px; }
+        .tag-badge { background: rgba(102,126,234,0.5); color: white; padding: 2px 10px; border-radius: 20px; font-size: 11px; display: inline-block; margin: 2px; }
 
-        .badge-success { background: rgba(46, 204, 113, 0.8); color: white; padding: 5px 15px; border-radius: 20px; }
-        .badge-warning { background: rgba(241, 196, 15, 0.8); color: white; padding: 5px 15px; border-radius: 20px; }
-
-        @media (max-width: 768px) {
-            .sidebar { width: 80px; padding: 20px 10px; }
-            .sidebar .brand { font-size: 18px; }
-            .sidebar .nav-link span { display: none; }
-            .main-content { margin-left: 80px; width: calc(100% - 80px); padding: 15px; }
+        .comment-item { border-bottom: 1px solid rgba(255,255,255,0.06); padding: 12px 0; }
+        .comment-item:last-child { border-bottom: none; }
+        .comment-item .comment-user { color: white; font-weight: 600; }
+        .comment-item .comment-content { color: rgba(255,255,255,0.85); margin: 4px 0; }
+        .comment-item .comment-date { color: rgba(255,255,255,0.4); font-size: 12px; }
+        .comment-item .reply-btn { background: transparent; border: none; color: #ffd700; font-size: 12px; cursor: pointer; padding: 0; }
+        .comment-item .reply-btn:hover { text-decoration: underline; }
+        .reply-form { display: none; margin-top: 10px; margin-left: 30px; }
+        .reply-form textarea {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: white;
+            border-radius: 12px;
+            padding: 8px 14px;
+            width: 100%;
+            font-size: 14px;
         }
+        .reply-form textarea:focus {
+            background: rgba(255,255,255,0.15);
+            border-color: rgba(255,255,255,0.3);
+            outline: none;
+        }
+        .replies-container { margin-left: 30px; border-left: 2px solid rgba(255,255,255,0.08); padding-left: 15px; }
+
+        .like-btn {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .like-btn:hover { background: rgba(231,76,60,0.3); transform: scale(1.05); }
+
+        .pagination .page-link {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: white;
+        }
+        .pagination .page-link:hover { background: rgba(255,255,255,0.2); color: white; }
+        .pagination .page-item.active .page-link { background: rgba(102,126,234,0.6); border-color: rgba(102,126,234,0.6); }
     </style>
 </head>
 <body>
 <div class="main-wrapper">
+    <!-- Sidebar -->
     <div class="sidebar">
         <div class="brand">📝 <span>CMS</span></div>
         <nav>
             <div class="nav-item"><a href="/dashboard" class="nav-link"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></div>
             <div class="nav-item"><a href="/articles" class="nav-link active"><i class="fas fa-newspaper"></i> <span>Articles</span></a></div>
             <div class="nav-item"><a href="/categories" class="nav-link"><i class="fas fa-folder"></i> <span>Categories</span></a></div>
+            <div class="nav-item"><a href="/tags" class="nav-link"><i class="fas fa-tags"></i> <span>Tags</span></a></div>
+            <div class="nav-item"><a href="/pages" class="nav-link"><i class="fas fa-file"></i> <span>Pages</span></a></div>
+            <div class="nav-item"><a href="/media" class="nav-link"><i class="fas fa-images"></i> <span>Media</span></a></div>
+            <div class="nav-item"><a href="/comments" class="nav-link"><i class="fas fa-comments"></i> <span>Comments</span></a></div>
+            <div class="nav-item"><a href="/menus" class="nav-link"><i class="fas fa-bars"></i> <span>Menus</span></a></div>
+            <div class="nav-item"><a href="/products" class="nav-link"><i class="fas fa-box"></i> <span>Products</span></a></div>
+            <div class="nav-item"><a href="/widgets" class="nav-link"><i class="fas fa-puzzle-piece"></i> <span>Widgets</span></a></div>
+            <div class="nav-item"><a href="/forms" class="nav-link"><i class="fas fa-file-alt"></i> <span>Forms</span></a></div>
+            <div class="nav-item"><a href="/faqs" class="nav-link"><i class="fas fa-question-circle"></i> <span>FAQs</span></a></div>
+            <div class="nav-item"><a href="/testimonials" class="nav-link"><i class="fas fa-star"></i> <span>Testimonials</span></a></div>
+            <div class="nav-item"><a href="/events" class="nav-link"><i class="fas fa-calendar"></i> <span>Events</span></a></div>
+            <div class="nav-item"><a href="/calendar" class="nav-link"><i class="fas fa-calendar-alt"></i> <span>Calendar</span></a></div>
+            <div class="nav-item"><a href="/portfolios" class="nav-link"><i class="fas fa-briefcase"></i> <span>Portfolios</span></a></div>
+            <div class="nav-item"><a href="/jobs" class="nav-link"><i class="fas fa-briefcase"></i> <span>Jobs</span></a></div>
+            <div class="nav-item"><a href="/news" class="nav-link"><i class="fas fa-bullhorn"></i> <span>News</span></a></div>
+            <div class="nav-item"><a href="/backup" class="nav-link"><i class="fas fa-database"></i> <span>Backup</span></a></div>
+            <div class="nav-item"><a href="/version-history" class="nav-link"><i class="fas fa-history"></i> <span>Versions</span></a></div>
             <div class="nav-item"><a href="/users" class="nav-link"><i class="fas fa-users"></i> <span>Users</span></a></div>
         </nav>
     </div>
 
     <div class="main-content">
+        <!-- Top Bar -->
         <div class="top-bar">
             <h1>📄 Articles</h1>
             <div class="user-info">
-                <i class="fas fa-user-circle" style="font-size:24px;"></i>
+                <i class="fas fa-user-circle" style="font-size:22px;"></i>
                 <span>Admin</span>
                 <a href="/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
             </div>
         </div>
 
-        <!-- Create Article -->
+        <!-- Create/Edit Form -->
         <div class="glass-card">
             <h5 class="card-title" id="formTitle"><i class="fas fa-pen"></i> Create New Article</h5>
             <form id="articleForm">
                 <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label>Title</label>
-                        <input type="text" id="articleTitle" class="form-control" placeholder="Enter article title..." required>
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <label>Category</label>
-                        <select id="articleCategory" class="form-select" required>
-                            <option value="">Select Category...</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <label>Status</label>
-                        <select id="articleStatus" class="form-select">
-                            <option value="DRAFT">Draft</option>
-                            <option value="PUBLISHED">Published</option>
-                        </select>
-                    </div>
+                    <div class="col-md-6 mb-3"><label>Title *</label><input type="text" id="articleTitle" class="form-control" placeholder="Enter article title..." required></div>
+                    <div class="col-md-3 mb-3"><label>Category</label><select id="articleCategory" class="form-select" required><option value="">Select Category...</option></select></div>
+                    <div class="col-md-3 mb-3"><label>Status</label><select id="articleStatus" class="form-select"><option value="DRAFT">Draft</option><option value="PUBLISHED">Published</option><option value="SCHEDULED">Scheduled</option></select></div>
                 </div>
-                <div class="mb-3">
-                    <label>Content</label>
-                    <textarea id="articleContent" rows="5" class="form-control" placeholder="Write your article content here..." required></textarea>
+                <div class="row">
+                    <div class="col-md-4 mb-3"><label>Slug (URL)</label><input type="text" id="articleSlug" class="form-control" placeholder="auto-generated"></div>
+                    <div class="col-md-4 mb-3"><label>Author Name</label><input type="text" id="articleAuthor" class="form-control" placeholder="Author name" value="Admin"></div>
+                    <div class="col-md-4 mb-3"><label>Publish Date (Scheduled)</label><input type="datetime-local" id="articlePublishAt" class="form-control"></div>
                 </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3"><label>Meta Title</label><input type="text" id="articleMetaTitle" class="form-control" placeholder="SEO Meta Title (optional)"></div>
+                    <div class="col-md-6 mb-3"><label>Meta Description</label><input type="text" id="articleMetaDescription" class="form-control" placeholder="SEO Meta Description (optional)"></div>
+                </div>
+                <div class="mb-3"><label>Canonical URL</label><input type="text" id="articleCanonicalUrl" class="form-control" placeholder="auto-generated from slug"></div>
+                <div class="mb-3"><label>Tags (comma separated)</label><input type="text" id="articleTags" class="form-control" placeholder="e.g., java, spring, cms"></div>
+                <div class="mb-3"><label>Content *</label><textarea id="articleContent" rows="5" class="form-control" placeholder="Write your article content here..." required></textarea></div>
                 <button type="submit" class="btn-glass success" id="submitBtn"><i class="fas fa-save"></i> Create Article</button>
                 <button type="button" class="btn-glass warning" id="cancelBtn" style="display:none;" onclick="clearForm()"><i class="fas fa-times"></i> Cancel</button>
             </form>
@@ -182,13 +258,8 @@
         <!-- Search -->
         <div class="glass-card">
             <div class="row">
-                <div class="col-md-9">
-                    <input type="text" id="searchInput" class="form-control" placeholder="🔍 Search articles by title or content...">
-                </div>
-                <div class="col-md-3">
-                    <button class="btn-glass primary" onclick="searchArticles()"><i class="fas fa-search"></i> Search</button>
-                    <button class="btn-glass" onclick="clearSearch()"><i class="fas fa-undo"></i> Clear</button>
-                </div>
+                <div class="col-md-9"><input type="text" id="searchInput" class="form-control" placeholder="🔍 Search articles by title or content..."></div>
+                <div class="col-md-3 d-flex gap-2"><button class="btn-glass primary flex-fill" onclick="searchArticles()"><i class="fas fa-search"></i> Search</button><button class="btn-glass flex-fill" onclick="clearSearch()"><i class="fas fa-undo"></i> Clear</button></div>
             </div>
         </div>
 
@@ -197,16 +268,39 @@
             <h5 class="card-title"><i class="fas fa-list"></i> All Articles</h5>
             <div class="table-responsive">
                 <table class="table">
-                    <thead><tr><th>ID</th><th>Title</th><th>Category</th><th>Status</th><th>Created</th><th>Actions</th></tr></thead>
-                    <tbody id="articlesBody"><tr><td colspan="6" class="text-center text-white-50">Loading articles...</td></tr></tbody>
+                    <thead><tr><th>ID</th><th>Title</th><th>Author</th><th>Category</th><th>Tags</th><th>Status</th><th>Likes</th><th>Views</th><th>Actions</th></tr></thead>
+                    <tbody id="articlesBody"><tr><td colspan="9" class="text-center text-white-50">Loading articles...</td></tr></tbody>
                 </table>
             </div>
+            <div class="mt-3 d-flex justify-content-end"><nav><ul class="pagination" id="paginationControls"></ul></nav></div>
+        </div>
+
+        <!-- Comments Section -->
+        <div class="glass-card" id="commentSection">
+            <h5 class="card-title"><i class="fas fa-comments"></i> Comments</h5>
+            <div id="commentsContainer"><p class="text-white-50">Loading comments...</p></div>
+            <div class="mt-3"><textarea id="commentInput" class="form-control" placeholder="Write a comment..." rows="2"></textarea><button class="btn-glass primary mt-2" onclick="addComment()"><i class="fas fa-paper-plane"></i> Post Comment</button></div>
         </div>
     </div>
 </div>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 <script>
-    let editingId = null, categories = [], currentSearch = '';
+    toastr.options = { "closeButton": true, "progressBar": true, "positionClass": "toast-top-right", "timeOut": "3000" };
+
+    let editingId = null, categories = [], currentSearch = '', currentPage = 0, totalPages = 0, selectedArticleId = 1;
+    let replyingTo = null;
+
+    tinymce.init({
+        selector: '#articleContent',
+        height: 350,
+        menubar: true,
+        plugins: 'advlist autolink lists link image charmap preview anchor code',
+        toolbar: 'undo redo | bold italic underline | bullist numlist | link image | code',
+        skin: 'oxide-dark',
+        content_css: 'dark',
+        setup: function(editor) { editor.on('change', function() { editor.save(); }); }
+    });
 
     function loadCategories() {
         fetch('/api/categories')
@@ -219,48 +313,198 @@
             });
     }
 
-    function loadArticles(keyword = '') {
-        const url = keyword ? `/api/articles/search?keyword=${encodeURIComponent(keyword)}` : '/api/articles';
+    function loadArticles(keyword = '', page = 0) {
+        const url = keyword ? `/api/articles/search?keyword=${encodeURIComponent(keyword)}&page=${page}` : `/api/articles/page?page=${page}`;
         fetch(url)
             .then(r => r.json())
-            .then(articles => {
-                const tbody = document.getElementById('articlesBody');
-                tbody.innerHTML = '';
-                if (articles.length === 0) { tbody.innerHTML = '<tr><td colspan="6" class="text-center text-white-50">No articles found</td></tr>'; return; }
-                articles.forEach(a => {
-                    const badge = a.status === 'PUBLISHED' ? '<span class="badge-success">Published</span>' : '<span class="badge-warning">Draft</span>';
-                    tbody.innerHTML += `<tr>
-                        <td>${a.id}</td>
-                        <td><strong>${a.title}</strong></td>
-                        <td>${a.category ? a.category.name : 'Uncategorized'}</td>
-                        <td>${badge}</td>
-                        <td>${a.createdAt ? new Date(a.createdAt).toLocaleDateString() : 'N/A'}</td>
-                        <td>
-                            <button class="btn-glass warning btn-sm" onclick="editArticle(${a.id})"><i class="fas fa-edit"></i></button>
-                            <button class="btn-glass danger btn-sm" onclick="deleteArticle(${a.id})"><i class="fas fa-trash"></i></button>
-                        </td>
-                    </tr>`;
+            .then(data => {
+                currentPage = data.number;
+                totalPages = data.totalPages;
+                renderArticles(data.content);
+                renderPagination(data);
+            })
+            .catch(err => { console.error('Error loading articles:', err); document.getElementById('articlesBody').innerHTML = '<tr><td colspan="9" class="text-center text-danger">Failed to load articles.</td></tr>'; });
+    }
+
+    function renderArticles(articles) {
+        const tbody = document.getElementById('articlesBody');
+        tbody.innerHTML = '';
+        if (!articles || articles.length === 0) { tbody.innerHTML = '<tr><td colspan="9" class="text-center text-white-50">No articles found</td></tr>'; return; }
+        articles.forEach(a => {
+            const statusBadge = a.status === 'PUBLISHED' ? '<span class="badge-success">Published</span>' : a.status === 'SCHEDULED' ? '<span class="badge-warning">Scheduled</span>' : '<span class="badge-warning">Draft</span>';
+            const categoryName = a.category ? a.category.name : 'Uncategorized';
+            const tagsHtml = (a.tags && a.tags.length) ? a.tags.map(t => `<span class="tag-badge">${t.name}</span>`).join('') : '—';
+            const authorName = a.authorName || 'Admin';
+            tbody.innerHTML += `<tr>
+                <td>${a.id}</td>
+                <td><strong>${a.title}</strong></td>
+                <td>${authorName}</td>
+                <td>${categoryName}</td>
+                <td>${tagsHtml}</td>
+                <td>${statusBadge}</td>
+                <td><button class="like-btn" onclick="likeArticle(${a.id})">❤️ <span id="likes-${a.id}">${a.likes || 0}</span></button></td>
+                <td><span class="badge-secondary">${a.viewCount || 0}</span></td>
+                <td>
+                    <button class="btn-glass primary btn-sm" onclick="previewArticle(${a.id})" title="Preview"><i class="fas fa-eye"></i></button>
+                    <button class="btn-glass warning btn-sm" onclick="editArticle(${a.id})" title="Edit"><i class="fas fa-edit"></i></button>
+                    <button class="btn-glass danger btn-sm" onclick="deleteArticle(${a.id})" title="Delete"><i class="fas fa-trash"></i></button>
+                    <button class="btn-glass info btn-sm" onclick="viewComments(${a.id})" title="Comments"><i class="fas fa-comments"></i></button>
+                    <button class="btn-glass secondary btn-sm" onclick="viewVersionHistory(${a.id})" title="Version History"><i class="fas fa-history"></i></button>
+                </td>
+            </tr>`;
+        });
+    }
+
+    function renderPagination(data) {
+        const container = document.getElementById('paginationControls');
+        if (data.totalPages <= 1) { container.innerHTML = ''; return; }
+        let html = '';
+        html += `<li class="page-item ${data.first ? 'disabled' : ''}"><a class="page-link" href="#" onclick="goToPage(${data.number - 1})">Previous</a></li>`;
+        for (let i = 0; i < data.totalPages; i++) { html += `<li class="page-item ${i === data.number ? 'active' : ''}"><a class="page-link" href="#" onclick="goToPage(${i})">${i+1}</a></li>`; }
+        html += `<li class="page-item ${data.last ? 'disabled' : ''}"><a class="page-link" href="#" onclick="goToPage(${data.number + 1})">Next</a></li>`;
+        container.innerHTML = html;
+    }
+
+    function goToPage(page) { if (page < 0 || page >= totalPages) return; loadArticles(currentSearch, page); }
+    function previewArticle(id) { window.open(`/article/preview/${id}`, '_blank'); }
+    function viewVersionHistory(id) { window.location.href = `/version-history?articleId=${id}`; }
+
+    function viewComments(articleId) { selectedArticleId = articleId; loadComments(articleId); document.getElementById('commentSection').scrollIntoView({ behavior: 'smooth' }); }
+
+    function loadComments(articleId) {
+        fetch(`/api/comments/article/${articleId}`)
+            .then(r => r.json())
+            .then(comments => {
+                const container = document.getElementById('commentsContainer');
+                if (!comments || comments.length === 0) { container.innerHTML = '<p class="text-white-50">No comments yet. Be the first!</p>'; return; }
+                let html = '';
+                comments.forEach(c => { html += renderComment(c); });
+                container.innerHTML = html;
+                document.querySelectorAll('.reply-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const parentId = this.dataset.commentId;
+                        toggleReplyForm(parentId);
+                    });
                 });
+                document.querySelectorAll('.reply-form').forEach(form => {
+                    form.addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        const parentId = this.dataset.parentId;
+                        const textarea = this.querySelector('textarea');
+                        const content = textarea.value.trim();
+                        if (!content) { toastr.warning('Please write a reply'); return; }
+                        submitReply(parentId, content, textarea);
+                    });
+                });
+            })
+            .catch(err => {
+                console.error('Error loading comments:', err);
+                document.getElementById('commentsContainer').innerHTML = '<p class="text-danger">Failed to load comments.</p>';
             });
     }
 
-    function searchArticles() { const k = document.getElementById('searchInput').value.trim(); currentSearch = k; loadArticles(k); }
-    function clearSearch() { document.getElementById('searchInput').value = ''; currentSearch = ''; loadArticles(); }
-    document.getElementById('searchInput').addEventListener('keyup', e => { if (e.key === 'Enter') searchArticles(); });
+    function renderComment(comment, indent = 0) {
+        const repliesHtml = comment.replies && comment.replies.length > 0
+            ? comment.replies.map(r => renderComment(r, indent + 1)).join('')
+            : '';
+        const marginLeft = indent * 30;
+        return `
+            <div class="comment-item" style="margin-left: ${marginLeft}px;">
+                <div class="comment-user">${comment.user ? comment.user.fullName : 'Anonymous'}</div>
+                <div class="comment-content">${comment.content}</div>
+                <div class="comment-date">${new Date(comment.createdAt).toLocaleString()}</div>
+                <button class="reply-btn" data-comment-id="${comment.id}">Reply</button>
+                <div class="reply-form" data-parent-id="${comment.id}" style="display:none;">
+                    <textarea placeholder="Write a reply..." rows="2"></textarea>
+                    <button type="submit" class="btn-glass info btn-sm mt-1">Post Reply</button>
+                </div>
+                ${repliesHtml ? `<div class="replies-container">${repliesHtml}</div>` : ''}
+            </div>
+        `;
+    }
+
+    function toggleReplyForm(parentId) {
+        const form = document.querySelector(`.reply-form[data-parent-id="${parentId}"]`);
+        if (form) {
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+            if (form.style.display === 'block') { form.querySelector('textarea').focus(); }
+        }
+    }
+
+    function submitReply(parentId, content, textarea) {
+        fetch(`/api/comments/reply/${parentId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/text' },
+            body: content
+        })
+            .then(r => r.json())
+            .then(() => {
+                toastr.success('Reply posted!');
+                textarea.value = '';
+                textarea.closest('.reply-form').style.display = 'none';
+                loadComments(selectedArticleId);
+            })
+            .catch(err => {
+                console.error('Error posting reply:', err);
+                toastr.error('Failed to post reply.');
+            });
+    }
+
+    function addComment() {
+        const content = document.getElementById('commentInput').value.trim();
+        if (!content) { toastr.warning('Please write a comment!'); return; }
+        fetch(`/api/comments/article/${selectedArticleId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/text' },
+            body: content
+        })
+            .then(r => r.json())
+            .then(() => {
+                document.getElementById('commentInput').value = '';
+                loadComments(selectedArticleId);
+                toastr.success('Comment posted!');
+            })
+            .catch(err => {
+                console.error('Error posting comment:', err);
+                toastr.error('Failed to post comment.');
+            });
+    }
+
+    function likeArticle(id) {
+        fetch(`/api/articles/${id}/like`, { method: 'PUT' })
+            .then(r => r.json())
+            .then(article => {
+                document.getElementById(`likes-${id}`).textContent = article.likes || 0;
+            })
+            .catch(err => console.error('Error liking article:', err));
+    }
+
+    function searchArticles() { const k = document.getElementById('searchInput').value.trim(); currentSearch = k; loadArticles(k, 0); }
+    function clearSearch() { document.getElementById('searchInput').value = ''; currentSearch = ''; loadArticles('', 0); }
+    document.getElementById('searchInput').addEventListener('keyup', function(e) { if (e.key === 'Enter') searchArticles(); });
 
     document.getElementById('articleForm').addEventListener('submit', function(e) {
         e.preventDefault();
         const title = document.getElementById('articleTitle').value.trim();
-        const content = document.getElementById('articleContent').value.trim();
+        const content = tinymce.get('articleContent').getContent();
         const categoryId = document.getElementById('articleCategory').value;
         const status = document.getElementById('articleStatus').value;
-        if (!title || !content) { alert('Title and Content are required!'); return; }
-        const article = { title, content, status, category: categoryId ? { id: parseInt(categoryId) } : null };
+        const slug = document.getElementById('articleSlug').value.trim() || undefined;
+        const metaTitle = document.getElementById('articleMetaTitle').value.trim() || undefined;
+        const metaDescription = document.getElementById('articleMetaDescription').value.trim() || undefined;
+        const canonicalUrl = document.getElementById('articleCanonicalUrl').value.trim() || undefined;
+        const authorName = document.getElementById('articleAuthor').value.trim() || 'Admin';
+        const publishAt = document.getElementById('articlePublishAt').value;
+        const tagsValue = document.getElementById('articleTags').value.trim();
+        const tags = tagsValue ? tagsValue.split(',').map(t => ({ name: t.trim() })).filter(t => t.name.length > 0) : [];
+        if (!title || !content) { toastr.warning('Title and Content are required!'); return; }
+        const article = { title, content, status, slug, metaTitle, metaDescription, canonicalUrl, authorName, publishAt: publishAt ? publishAt + ':00' : null, category: categoryId ? { id: parseInt(categoryId) } : null, tags: tags };
         const method = editingId ? 'PUT' : 'POST';
         const url = editingId ? `/api/articles/${editingId}` : '/api/articles';
         fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(article) })
             .then(r => r.json())
-            .then(() => { clearForm(); loadArticles(currentSearch); alert('Article saved!'); });
+            .then(() => { clearForm(); loadArticles(currentSearch, currentPage); toastr.success(editingId ? 'Article updated!' : 'Article created!'); })
+            .catch(err => { console.error('Error saving article:', err); toastr.error('Failed to save article.'); });
     });
 
     function editArticle(id) {
@@ -269,33 +513,55 @@
             .then(a => {
                 editingId = id;
                 document.getElementById('articleTitle').value = a.title;
-                document.getElementById('articleContent').value = a.content;
-                document.getElementById('articleStatus').value = a.status;
+                tinymce.get('articleContent').setContent(a.content || '');
+                document.getElementById('articleStatus').value = a.status || 'DRAFT';
                 document.getElementById('articleCategory').value = a.category ? a.category.id : '';
+                document.getElementById('articleSlug').value = a.slug || '';
+                document.getElementById('articleMetaTitle').value = a.metaTitle || '';
+                document.getElementById('articleMetaDescription').value = a.metaDescription || '';
+                document.getElementById('articleCanonicalUrl').value = a.canonicalUrl || '';
+                document.getElementById('articleAuthor').value = a.authorName || 'Admin';
+                document.getElementById('articleTags').value = a.tags ? a.tags.map(t => t.name).join(', ') : '';
+                if (a.publishAt) { document.getElementById('articlePublishAt').value = a.publishAt.substring(0, 16); }
                 document.getElementById('formTitle').innerHTML = '<i class="fas fa-edit"></i> Edit Article';
                 document.getElementById('submitBtn').innerHTML = '<i class="fas fa-save"></i> Update Article';
                 document.getElementById('submitBtn').className = 'btn-glass primary';
                 document.getElementById('cancelBtn').style.display = 'inline-block';
-            });
+            })
+            .catch(err => { console.error('Error loading article for edit:', err); toastr.error('Failed to load article.'); });
     }
 
     function deleteArticle(id) {
-        if (confirm('Delete this article?')) { fetch(`/api/articles/${id}`, { method: 'DELETE' }).then(() => loadArticles(currentSearch)); }
+        if (confirm('Delete this article?')) {
+            fetch(`/api/articles/${id}`, { method: 'DELETE' })
+                .then(() => { loadArticles(currentSearch, currentPage); toastr.success('Article deleted'); })
+                .catch(err => { console.error('Error deleting article:', err); toastr.error('Failed to delete article.'); });
+        }
     }
 
     function clearForm() {
         editingId = null;
         document.getElementById('articleTitle').value = '';
-        document.getElementById('articleContent').value = '';
+        tinymce.get('articleContent').setContent('');
         document.getElementById('articleCategory').value = '';
         document.getElementById('articleStatus').value = 'DRAFT';
+        document.getElementById('articleSlug').value = '';
+        document.getElementById('articleMetaTitle').value = '';
+        document.getElementById('articleMetaDescription').value = '';
+        document.getElementById('articleCanonicalUrl').value = '';
+        document.getElementById('articleAuthor').value = 'Admin';
+        document.getElementById('articleTags').value = '';
+        document.getElementById('articlePublishAt').value = '';
         document.getElementById('formTitle').innerHTML = '<i class="fas fa-pen"></i> Create New Article';
         document.getElementById('submitBtn').innerHTML = '<i class="fas fa-save"></i> Create Article';
         document.getElementById('submitBtn').className = 'btn-glass success';
         document.getElementById('cancelBtn').style.display = 'none';
     }
 
-    loadCategories(); loadArticles();
+    loadCategories();
+    loadArticles('', 0);
+    setTimeout(() => { loadComments(1); }, 1000);
 </script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

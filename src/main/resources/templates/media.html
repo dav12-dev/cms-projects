@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Media - CMS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="/css/dark-mode.css">
+    <script src="/js/dark-mode.js" defer></script>
+    <script src="/js/theme-switcher.js" defer></script>
+    <style>
+        body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .main-wrapper { display: flex; min-height: 100vh; }
+        .sidebar {
+            width: 280px;
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255,255,255,0.12);
+            padding: 25px 18px;
+            min-height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+        [data-theme="dark"] .sidebar { background: rgba(0,0,0,0.4); border-right: 1px solid rgba(255,255,255,0.05); }
+        .sidebar .brand { color: white; font-size: 26px; font-weight: 700; text-align: center; padding-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 25px; }
+        .sidebar .brand span { color: #ffd700; }
+        .sidebar .nav-item { margin-bottom: 4px; }
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.7);
+            padding: 10px 16px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+        }
+        .sidebar .nav-link:hover { background: rgba(255,255,255,0.12); color: white; transform: translateX(4px); }
+        .sidebar .nav-link.active { background: rgba(255,255,255,0.18); color: white; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
+        .sidebar .nav-link i { width: 22px; text-align: center; }
+
+        .main-content { margin-left: 280px; padding: 25px 30px; width: calc(100% - 280px); min-height: 100vh; }
+        @media (max-width: 768px) {
+            .sidebar { width: 75px; padding: 15px 10px; }
+            .sidebar .brand { font-size: 18px; }
+            .sidebar .nav-link span { display: none; }
+            .sidebar .nav-link { justify-content: center; padding: 10px; }
+            .main-content { margin-left: 75px; width: calc(100% - 75px); padding: 15px; }
+        }
+
+        .top-bar {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 16px;
+            padding: 12px 24px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .top-bar h1 { color: white; font-weight: 700; margin: 0; font-size: 22px; }
+        .top-bar .user-info { color: white; display: flex; align-items: center; gap: 15px; }
+        .top-bar .user-info .logout-btn { color: #ff6b6b; text-decoration: none; font-weight: 500; font-size: 14px; transition: all 0.3s ease; }
+        .top-bar .user-info .logout-btn:hover { color: #ff4757; }
+
+        .glass-card {
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 22px 25px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        .glass-card:hover { box-shadow: 0 12px 48px rgba(0,0,0,0.15); }
+        .glass-card .card-title { color: white; font-weight: 600; font-size: 17px; }
+
+        .btn-glass {
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: white;
+            padding: 10px 22px;
+            border-radius: 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+        .btn-glass:hover { background: rgba(255,255,255,0.25); color: white; transform: translateY(-2px) scale(1.02); }
+        .btn-glass.danger { background: rgba(231,76,60,0.5); }
+        .btn-glass.primary { background: rgba(102,126,234,0.5); }
+        .btn-glass.success { background: rgba(46,204,113,0.5); }
+
+        .upload-area {
+            border: 2px dashed rgba(255,255,255,0.25);
+            border-radius: 20px;
+            padding: 50px 20px;
+            text-align: center;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(255,255,255,0.04);
+        }
+        .upload-area:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(255,255,255,0.5);
+            transform: scale(1.01);
+        }
+        .upload-area i { font-size: 48px; margin-bottom: 15px; opacity: 0.7; }
+        .upload-area p { margin: 0; opacity: 0.7; }
+
+        .media-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 16px;
+        }
+        .media-item {
+            background: rgba(255,255,255,0.06);
+            border-radius: 16px;
+            padding: 12px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.06);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .media-item:hover {
+            background: rgba(255,255,255,0.12);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+        .media-item img {
+            max-width: 100%;
+            max-height: 120px;
+            border-radius: 12px;
+            object-fit: cover;
+        }
+        .media-item .file-icon {
+            font-size: 48px;
+            color: rgba(255,255,255,0.5);
+            padding: 20px 0;
+        }
+        .media-item .file-name {
+            color: white;
+            font-size: 13px;
+            margin-top: 8px;
+            word-break: break-all;
+            font-weight: 500;
+        }
+        .media-item .file-size {
+            color: rgba(255,255,255,0.4);
+            font-size: 11px;
+        }
+        .media-item .delete-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(0,0,0,0.4);
+            border: none;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            color: white;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+        }
+        .media-item:hover .delete-btn {
+            opacity: 1;
+        }
+        .media-item .delete-btn:hover {
+            background: rgba(231,76,60,0.8);
+        }
+
+        .progress {
+            height: 6px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.1);
+            margin-top: 15px;
+        }
+        .progress .progress-bar {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 10px;
+            transition: width 0.4s ease;
+        }
+
+        @media (max-width: 576px) {
+            .media-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+        }
+    </style>
+</head>
+<body>
+<div class="main-wrapper">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="brand">📝 <span>CMS</span></div>
+        <nav>
+            <div class="nav-item"><a href="/dashboard" class="nav-link"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></div>
+            <div class="nav-item"><a href="/articles" class="nav-link"><i class="fas fa-newspaper"></i> <span>Articles</span></a></div>
+            <div class="nav-item"><a href="/categories" class="nav-link"><i class="fas fa-folder"></i> <span>Categories</span></a></div>
+            <div class="nav-item"><a href="/tags" class="nav-link"><i class="fas fa-tags"></i> <span>Tags</span></a></div>
+            <div class="nav-item"><a href="/pages" class="nav-link"><i class="fas fa-file"></i> <span>Pages</span></a></div>
+            <div class="nav-item"><a href="/media" class="nav-link active"><i class="fas fa-images"></i> <span>Media</span></a></div>
+            <div class="nav-item"><a href="/comments" class="nav-link"><i class="fas fa-comments"></i> <span>Comments</span></a></div>
+            <div class="nav-item"><a href="/menus" class="nav-link"><i class="fas fa-bars"></i> <span>Menus</span></a></div>
+            <div class="nav-item"><a href="/products" class="nav-link"><i class="fas fa-box"></i> <span>Products</span></a></div>
+            <div class="nav-item"><a href="/widgets" class="nav-link"><i class="fas fa-puzzle-piece"></i> <span>Widgets</span></a></div>
+            <div class="nav-item"><a href="/forms" class="nav-link"><i class="fas fa-file-alt"></i> <span>Forms</span></a></div>
+            <div class="nav-item"><a href="/faqs" class="nav-link"><i class="fas fa-question-circle"></i> <span>FAQs</span></a></div>
+            <div class="nav-item"><a href="/testimonials" class="nav-link"><i class="fas fa-star"></i> <span>Testimonials</span></a></div>
+            <div class="nav-item"><a href="/events" class="nav-link"><i class="fas fa-calendar"></i> <span>Events</span></a></div>
+            <div class="nav-item"><a href="/calendar" class="nav-link"><i class="fas fa-calendar-alt"></i> <span>Calendar</span></a></div>
+            <div class="nav-item"><a href="/portfolios" class="nav-link"><i class="fas fa-briefcase"></i> <span>Portfolios</span></a></div>
+            <div class="nav-item"><a href="/jobs" class="nav-link"><i class="fas fa-briefcase"></i> <span>Jobs</span></a></div>
+            <div class="nav-item"><a href="/news" class="nav-link"><i class="fas fa-bullhorn"></i> <span>News</span></a></div>
+            <div class="nav-item"><a href="/backup" class="nav-link"><i class="fas fa-database"></i> <span>Backup</span></a></div>
+            <div class="nav-item"><a href="/version-history" class="nav-link"><i class="fas fa-history"></i> <span>Versions</span></a></div>
+            <div class="nav-item"><a href="/users" class="nav-link"><i class="fas fa-users"></i> <span>Users</span></a></div>
+        </nav>
+    </div>
+
+    <div class="main-content">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <h1>🖼️ Media Library</h1>
+            <div class="user-info">
+                <i class="fas fa-user-circle" style="font-size:22px;"></i>
+                <span>Admin</span>
+                <a href="/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+        </div>
+
+        <!-- Upload Area -->
+        <div class="glass-card">
+            <h5 class="card-title"><i class="fas fa-upload"></i> Upload New File</h5>
+            <div class="upload-area" onclick="document.getElementById('fileInput').click()" ondragover="event.preventDefault();" ondrop="handleDrop(event)">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <p>Click or drag & drop to upload</p>
+                <input type="file" id="fileInput" style="display:none;" multiple accept="image/*,.pdf,.doc,.docx,.txt" onchange="uploadFiles(this)">
+                <div id="uploadProgress" style="display:none;margin-top:15px;">
+                    <div class="progress"><div class="progress-bar" role="progressbar" style="width:0%;" id="uploadProgressBar"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Media Grid -->
+        <div class="glass-card">
+            <h5 class="card-title"><i class="fas fa-th"></i> All Media</h5>
+            <div id="mediaGrid" class="media-grid">
+                <div class="text-center text-white-50 w-100 py-4">Loading media...</div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<script>
+    toastr.options = { "closeButton": true, "progressBar": true, "positionClass": "toast-top-right", "timeOut": "3000" };
+
+    function loadMedia() {
+        fetch('/api/media')
+            .then(r => r.json())
+            .then(media => {
+                const grid = document.getElementById('mediaGrid');
+                grid.innerHTML = '';
+                if (!media || media.length === 0) {
+                    grid.innerHTML = '<div class="text-center text-white-50 w-100 py-4">No media found.</div>';
+                    return;
+                }
+                media.forEach(m => {
+                    const isImage = m.fileType && m.fileType.startsWith('image/');
+                    const preview = isImage ? `<img src="/api/media/${m.id}" alt="${m.fileName}">` : `<div class="file-icon"><i class="fas fa-file"></i></div>`;
+                    const size = (m.fileSize / 1024).toFixed(1) + ' KB';
+                    const item = document.createElement('div');
+                    item.className = 'media-item';
+                    item.innerHTML = `
+                        <div class="delete-btn" onclick="deleteMedia(${m.id})"><i class="fas fa-trash"></i></div>
+                        ${preview}
+                        <div class="file-name">${m.fileName}</div>
+                        <div class="file-size">${size}</div>
+                    `;
+                    grid.appendChild(item);
+                });
+            })
+            .catch(() => toastr.error('Failed to load media'));
+    }
+
+    function uploadFiles(input) {
+        const files = input.files;
+        if (!files.length) return;
+        const formData = new FormData();
+        for (let f of files) {
+            formData.append('file', f);
+        }
+        const progressContainer = document.getElementById('uploadProgress');
+        const progressBar = document.getElementById('uploadProgressBar');
+        progressContainer.style.display = 'block';
+        progressBar.style.width = '0%';
+
+        fetch('/api/media/upload', {
+            method: 'POST',
+            body: formData
+        })
+            .then(r => r.json())
+            .then(() => {
+                progressBar.style.width = '100%';
+                setTimeout(() => {
+                    progressContainer.style.display = 'none';
+                    progressBar.style.width = '0%';
+                    loadMedia();
+                    toastr.success('Upload successful!');
+                }, 500);
+            })
+            .catch(() => {
+                toastr.error('Upload failed');
+                progressContainer.style.display = 'none';
+                progressBar.style.width = '0%';
+            });
+        // Reset input
+        input.value = '';
+    }
+
+    function handleDrop(e) {
+        e.preventDefault();
+        const files = e.dataTransfer.files;
+        if (files.length) {
+            const input = document.getElementById('fileInput');
+            input.files = files;
+            uploadFiles(input);
+        }
+    }
+
+    function deleteMedia(id) {
+        if (confirm('Delete this file?')) {
+            fetch(`/api/media/${id}`, { method: 'DELETE' })
+                .then(() => {
+                    loadMedia();
+                    toastr.success('File deleted');
+                })
+                .catch(() => toastr.error('Failed to delete'));
+        }
+    }
+
+    loadMedia();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

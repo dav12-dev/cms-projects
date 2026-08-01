@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>News - CMS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="/css/dark-mode.css">
+    <script src="/js/dark-mode.js" defer></script>
+    <script src="/js/theme-switcher.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.3/tinymce.min.js"></script>
+    <style>
+        body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .main-wrapper { display: flex; min-height: 100vh; }
+        .sidebar {
+            width: 280px;
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255,255,255,0.12);
+            padding: 25px 18px;
+            min-height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+        [data-theme="dark"] .sidebar { background: rgba(0,0,0,0.4); border-right: 1px solid rgba(255,255,255,0.05); }
+        .sidebar .brand { color: white; font-size: 26px; font-weight: 700; text-align: center; padding-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 25px; }
+        .sidebar .brand span { color: #ffd700; }
+        .sidebar .nav-item { margin-bottom: 4px; }
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.7);
+            padding: 10px 16px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+        }
+        .sidebar .nav-link:hover { background: rgba(255,255,255,0.12); color: white; transform: translateX(4px); }
+        .sidebar .nav-link.active { background: rgba(255,255,255,0.18); color: white; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
+        .sidebar .nav-link i { width: 22px; text-align: center; }
+
+        .main-content { margin-left: 280px; padding: 25px 30px; width: calc(100% - 280px); min-height: 100vh; }
+        @media (max-width: 768px) {
+            .sidebar { width: 75px; padding: 15px 10px; }
+            .sidebar .brand { font-size: 18px; }
+            .sidebar .nav-link span { display: none; }
+            .sidebar .nav-link { justify-content: center; padding: 10px; }
+            .main-content { margin-left: 75px; width: calc(100% - 75px); padding: 15px; }
+        }
+
+        .top-bar {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 16px;
+            padding: 12px 24px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .top-bar h1 { color: white; font-weight: 700; margin: 0; font-size: 22px; }
+        .top-bar .user-info { color: white; display: flex; align-items: center; gap: 15px; }
+        .top-bar .user-info .logout-btn { color: #ff6b6b; text-decoration: none; font-weight: 500; font-size: 14px; transition: all 0.3s ease; }
+        .top-bar .user-info .logout-btn:hover { color: #ff4757; }
+
+        .glass-card {
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 22px 25px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        .glass-card:hover { box-shadow: 0 12px 48px rgba(0,0,0,0.15); }
+        .glass-card .card-title { color: white; font-weight: 600; font-size: 17px; }
+        .glass-card label { color: white; font-weight: 500; font-size: 14px; }
+
+        .form-control, .form-select {
+            background: rgba(255,255,255,0.12) !important;
+            border: 1px solid rgba(255,255,255,0.2) !important;
+            color: white !important;
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        .form-control::placeholder { color: rgba(255,255,255,0.5); }
+        .form-control:focus, .form-select:focus {
+            background: rgba(255,255,255,0.2) !important;
+            border-color: rgba(255,255,255,0.5) !important;
+            box-shadow: 0 0 30px rgba(255,255,255,0.05);
+        }
+        .form-select option { color: #333; }
+
+        .btn-glass {
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: white;
+            padding: 10px 22px;
+            border-radius: 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+        .btn-glass:hover { background: rgba(255,255,255,0.25); color: white; transform: translateY(-2px) scale(1.02); }
+        .btn-glass.success { background: rgba(46,204,113,0.5); }
+        .btn-glass.primary { background: rgba(102,126,234,0.5); }
+        .btn-glass.warning { background: rgba(241,196,15,0.5); }
+        .btn-glass.danger { background: rgba(231,76,60,0.5); }
+
+        .table { color: white; }
+        .table thead th {
+            border-bottom: 1px solid rgba(255,255,255,0.15);
+            color: rgba(255,255,255,0.8);
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 12px 8px;
+        }
+        .table tbody td {
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            vertical-align: middle;
+            padding: 10px 8px;
+        }
+        .table tbody tr:hover { background: rgba(255,255,255,0.04); }
+
+        .badge-published { background: rgba(46,204,113,0.8); color: white; padding: 4px 14px; border-radius: 20px; font-size: 11px; }
+        .badge-draft { background: rgba(241,196,15,0.8); color: white; padding: 4px 14px; border-radius: 20px; font-size: 11px; }
+        .badge-breaking { background: rgba(231,76,60,0.9); color: white; padding: 4px 14px; border-radius: 20px; font-size: 11px; font-weight: 600; animation: pulse 1.5s ease-in-out infinite; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .tiny-wrapper .tox-tinymce { border-radius: 12px !important; border-color: rgba(255,255,255,0.2) !important; }
+        .tiny-wrapper .tox .tox-toolbar { background: rgba(255,255,255,0.05) !important; }
+        .tiny-wrapper .tox .tox-edit-area { background: rgba(255,255,255,0.02) !important; }
+    </style>
+</head>
+<body>
+<div class="main-wrapper">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="brand">📝 <span>CMS</span></div>
+        <nav>
+            <div class="nav-item"><a href="/dashboard" class="nav-link"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></div>
+            <div class="nav-item"><a href="/articles" class="nav-link"><i class="fas fa-newspaper"></i> <span>Articles</span></a></div>
+            <div class="nav-item"><a href="/categories" class="nav-link"><i class="fas fa-folder"></i> <span>Categories</span></a></div>
+            <div class="nav-item"><a href="/tags" class="nav-link"><i class="fas fa-tags"></i> <span>Tags</span></a></div>
+            <div class="nav-item"><a href="/pages" class="nav-link"><i class="fas fa-file"></i> <span>Pages</span></a></div>
+            <div class="nav-item"><a href="/media" class="nav-link"><i class="fas fa-images"></i> <span>Media</span></a></div>
+            <div class="nav-item"><a href="/comments" class="nav-link"><i class="fas fa-comments"></i> <span>Comments</span></a></div>
+            <div class="nav-item"><a href="/menus" class="nav-link"><i class="fas fa-bars"></i> <span>Menus</span></a></div>
+            <div class="nav-item"><a href="/products" class="nav-link"><i class="fas fa-box"></i> <span>Products</span></a></div>
+            <div class="nav-item"><a href="/widgets" class="nav-link"><i class="fas fa-puzzle-piece"></i> <span>Widgets</span></a></div>
+            <div class="nav-item"><a href="/forms" class="nav-link"><i class="fas fa-file-alt"></i> <span>Forms</span></a></div>
+            <div class="nav-item"><a href="/faqs" class="nav-link"><i class="fas fa-question-circle"></i> <span>FAQs</span></a></div>
+            <div class="nav-item"><a href="/testimonials" class="nav-link"><i class="fas fa-star"></i> <span>Testimonials</span></a></div>
+            <div class="nav-item"><a href="/events" class="nav-link"><i class="fas fa-calendar"></i> <span>Events</span></a></div>
+            <div class="nav-item"><a href="/calendar" class="nav-link"><i class="fas fa-calendar-alt"></i> <span>Calendar</span></a></div>
+            <div class="nav-item"><a href="/portfolios" class="nav-link"><i class="fas fa-briefcase"></i> <span>Portfolios</span></a></div>
+            <div class="nav-item"><a href="/jobs" class="nav-link"><i class="fas fa-briefcase"></i> <span>Jobs</span></a></div>
+            <div class="nav-item"><a href="/news" class="nav-link active"><i class="fas fa-bullhorn"></i> <span>News</span></a></div>
+            <div class="nav-item"><a href="/backup" class="nav-link"><i class="fas fa-database"></i> <span>Backup</span></a></div>
+            <div class="nav-item"><a href="/version-history" class="nav-link"><i class="fas fa-history"></i> <span>Versions</span></a></div>
+            <div class="nav-item"><a href="/users" class="nav-link"><i class="fas fa-users"></i> <span>Users</span></a></div>
+        </nav>
+    </div>
+
+    <div class="main-content">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <h1>📰 News</h1>
+            <div class="user-info">
+                <i class="fas fa-user-circle" style="font-size:22px;"></i>
+                <span>Admin</span>
+                <a href="/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+        </div>
+
+        <!-- Add/Edit Form -->
+        <div class="glass-card">
+            <h5 class="card-title" id="formTitle"><i class="fas fa-plus"></i> Add News</h5>
+            <form id="newsForm">
+                <div class="row">
+                    <div class="col-md-8 mb-3"><label>Title *</label><input type="text" id="newsTitle" class="form-control" placeholder="News title" required></div>
+                    <div class="col-md-4 mb-3"><label>Category</label><input type="text" id="newsCategory" class="form-control" placeholder="e.g., Technology, Business"></div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 mb-3"><label>Author</label><input type="text" id="newsAuthor" class="form-control" placeholder="Author name" value="Admin"></div>
+                    <div class="col-md-4 mb-3"><label>Publish Date</label><input type="datetime-local" id="newsPublishDate" class="form-control"></div>
+                    <div class="col-md-4 mb-3"><label>Status</label><select id="newsStatus" class="form-select"><option value="PUBLISHED">Published</option><option value="DRAFT">Draft</option></select></div>
+                </div>
+                <div class="mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="newsBreaking">
+                        <label class="form-check-label text-white" for="newsBreaking">
+                            🔥 Breaking News
+                        </label>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label>Content</label>
+                    <textarea id="newsContent" rows="4" class="form-control" placeholder="News content..."></textarea>
+                </div>
+                <button type="submit" class="btn-glass success" id="submitBtn"><i class="fas fa-save"></i> Add News</button>
+                <button type="button" class="btn-glass warning" id="cancelBtn" style="display:none;" onclick="clearForm()"><i class="fas fa-times"></i> Cancel</button>
+            </form>
+        </div>
+
+        <!-- News Table -->
+        <div class="glass-card">
+            <h5 class="card-title"><i class="fas fa-list"></i> All News</h5>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead><tr><th>ID</th><th>Title</th><th>Category</th><th>Author</th><th>Breaking</th><th>Status</th><th>Actions</th></tr></thead>
+                    <tbody id="newsBody"><tr><td colspan="7" class="text-center text-white-50">Loading news...</td></tr></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<script>
+    toastr.options = { "closeButton": true, "progressBar": true, "positionClass": "toast-top-right", "timeOut": "3000" };
+
+    let editingId = null;
+
+    // Initialize TinyMCE
+    tinymce.init({
+        selector: '#newsContent',
+        height: 250,
+        menubar: true,
+        plugins: 'advlist autolink lists link image charmap preview anchor code',
+        toolbar: 'undo redo | bold italic underline | bullist numlist | link image | code',
+        skin: 'oxide-dark',
+        content_css: 'dark',
+        setup: function(editor) { editor.on('change', function() { editor.save(); }); }
+    });
+
+    function loadNews() {
+        fetch('/api/news')
+            .then(r => r.json())
+            .then(news => {
+                const tbody = document.getElementById('newsBody');
+                tbody.innerHTML = '';
+                if (!news || news.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" class="text-center text-white-50">No news found</td></tr>';
+                    return;
+                }
+                news.forEach(n => {
+                    const statusBadge = n.status === 'PUBLISHED' ? '<span class="badge-published">Published</span>' : '<span class="badge-draft">Draft</span>';
+                    const breakingBadge = n.breaking ? '<span class="badge-breaking">🔥 Breaking</span>' : '—';
+                    const author = n.author || 'Admin';
+                    const category = n.category || '—';
+                    tbody.innerHTML += `<tr>
+                        <td>${n.id}</td>
+                        <td><strong>${n.title}</strong></td>
+                        <td>${category}</td>
+                        <td>${author}</td>
+                        <td>${breakingBadge}</td>
+                        <td>${statusBadge}</td>
+                        <td>
+                            <button class="btn-glass warning btn-sm" onclick="editNews(${n.id})"><i class="fas fa-edit"></i></button>
+                            <button class="btn-glass danger btn-sm" onclick="deleteNews(${n.id})"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>`;
+                });
+            })
+            .catch(() => toastr.error('Failed to load news'));
+    }
+
+    document.getElementById('newsForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const title = document.getElementById('newsTitle').value.trim();
+        if (!title) { toastr.warning('Title is required'); return; }
+
+        const news = {
+            title,
+            content: tinymce.get('newsContent').getContent(),
+            category: document.getElementById('newsCategory').value.trim(),
+            author: document.getElementById('newsAuthor').value.trim() || 'Admin',
+            publishDate: document.getElementById('newsPublishDate').value ? document.getElementById('newsPublishDate').value + ':00' : null,
+            breaking: document.getElementById('newsBreaking').checked,
+            status: document.getElementById('newsStatus').value
+        };
+
+        const method = editingId ? 'PUT' : 'POST';
+        const url = editingId ? `/api/news/${editingId}` : '/api/news';
+
+        fetch(url, {
+            method,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(news)
+        })
+            .then(r => r.json())
+            .then(() => {
+                clearForm();
+                loadNews();
+                toastr.success(editingId ? 'News updated!' : 'News added!');
+            })
+            .catch(() => toastr.error('Failed to save news'));
+    });
+
+    function editNews(id) {
+        fetch(`/api/news/${id}`)
+            .then(r => r.json())
+            .then(n => {
+                editingId = id;
+                document.getElementById('newsTitle').value = n.title;
+                tinymce.get('newsContent').setContent(n.content || '');
+                document.getElementById('newsCategory').value = n.category || '';
+                document.getElementById('newsAuthor').value = n.author || 'Admin';
+                if (n.publishDate) {
+                    document.getElementById('newsPublishDate').value = n.publishDate.substring(0, 16);
+                }
+                document.getElementById('newsBreaking').checked = n.breaking;
+                document.getElementById('newsStatus').value = n.status || 'PUBLISHED';
+                document.getElementById('formTitle').innerHTML = '<i class="fas fa-edit"></i> Edit News';
+                document.getElementById('submitBtn').innerHTML = '<i class="fas fa-save"></i> Update News';
+                document.getElementById('submitBtn').className = 'btn-glass primary';
+                document.getElementById('cancelBtn').style.display = 'inline-block';
+            })
+            .catch(() => toastr.error('Failed to load news'));
+    }
+
+    function deleteNews(id) {
+        if (confirm('Delete this news?')) {
+            fetch(`/api/news/${id}`, { method: 'DELETE' })
+                .then(() => {
+                    loadNews();
+                    toastr.success('News deleted');
+                })
+                .catch(() => toastr.error('Failed to delete'));
+        }
+    }
+
+    function clearForm() {
+        editingId = null;
+        document.getElementById('newsTitle').value = '';
+        tinymce.get('newsContent').setContent('');
+        document.getElementById('newsCategory').value = '';
+        document.getElementById('newsAuthor').value = 'Admin';
+        document.getElementById('newsPublishDate').value = '';
+        document.getElementById('newsBreaking').checked = false;
+        document.getElementById('newsStatus').value = 'PUBLISHED';
+        document.getElementById('formTitle').innerHTML = '<i class="fas fa-plus"></i> Add News';
+        document.getElementById('submitBtn').innerHTML = '<i class="fas fa-save"></i> Add News';
+        document.getElementById('submitBtn').className = 'btn-glass success';
+        document.getElementById('cancelBtn').style.display = 'none';
+    }
+
+    loadNews();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

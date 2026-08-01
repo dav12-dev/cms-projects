@@ -6,56 +6,263 @@
     <title>Register - CMS</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="/css/dark-mode.css">
+    <script src="/js/dark-mode.js" defer></script>
+    <script src="/js/theme-switcher.js" defer></script>
     <style>
         body {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            margin: 0;
+            overflow: hidden;
         }
+        [data-theme="dark"] body {
+            background: linear-gradient(135deg, #0f0c29 0%, #1a1a2e 100%);
+        }
+        [data-theme="blue"] body {
+            background: linear-gradient(135deg, #0c3483 0%, #a2b6df 100%);
+        }
+        [data-theme="green"] body {
+            background: linear-gradient(135deg, #0c5234 0%, #85c9a2 100%);
+        }
+        [data-theme="purple"] body {
+            background: linear-gradient(135deg, #4a0e78 0%, #c084e8 100%);
+        }
+        [data-theme="sunset"] body {
+            background: linear-gradient(135deg, #f12711 0%, #f5af19 100%);
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 50%;
+            top: -150px;
+            right: -150px;
+            animation: float 14s ease-in-out infinite;
+            z-index: 0;
+        }
+        body::after {
+            content: '';
+            position: absolute;
+            width: 350px;
+            height: 350px;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 50%;
+            bottom: -100px;
+            left: -100px;
+            animation: float 10s ease-in-out infinite reverse;
+            z-index: 0;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-40px) rotate(15deg); }
+        }
+
         .register-card {
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            max-width: 500px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 28px;
+            padding: 45px 40px;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.25);
+            max-width: 480px;
             width: 100%;
+            position: relative;
+            z-index: 1;
+            transition: all 0.3s ease;
         }
+        .register-card:hover {
+            box-shadow: 0 35px 100px rgba(0, 0, 0, 0.35);
+        }
+
         .register-card .brand {
             text-align: center;
             margin-bottom: 30px;
         }
         .register-card .brand h3 {
             font-weight: 700;
-            color: #333;
+            color: white;
+            font-size: 32px;
+            letter-spacing: -0.5px;
         }
-        .register-card .brand span {
-            color: #f5576c;
+        .register-card .brand h3 span {
+            color: #ffd700;
         }
+        .register-card .brand p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 15px;
+            margin-top: 5px;
+        }
+
         .register-card .form-control {
-            border-radius: 30px;
-            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.12) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            color: white !important;
+            border-radius: 16px;
+            padding: 14px 20px;
+            font-size: 15px;
+            transition: all 0.3s ease;
         }
+        .register-card .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+        .register-card .form-control:focus {
+            background: rgba(255, 255, 255, 0.2) !important;
+            border-color: rgba(255, 255, 255, 0.5) !important;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.08);
+        }
+
+        .register-card .input-group-text {
+            background: rgba(255, 255, 255, 0.08) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            border-right: none !important;
+            color: rgba(255, 255, 255, 0.7) !important;
+            border-radius: 16px 0 0 16px;
+            padding: 0 18px;
+        }
+        .register-card .input-group .form-control {
+            border-radius: 0 16px 16px 0;
+            border-left: none !important;
+        }
+
         .register-card .btn-register {
-            border-radius: 30px;
-            padding: 12px;
+            border-radius: 16px;
+            padding: 14px;
             font-weight: 600;
             background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
             border: none;
             color: white;
             width: 100%;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(245, 87, 108, 0.3);
+            margin-top: 10px;
         }
         .register-card .btn-register:hover {
-            opacity: 0.9;
-            transform: scale(1.02);
+            transform: translateY(-3px) scale(1.01);
+            box-shadow: 0 15px 40px rgba(245, 87, 108, 0.45);
         }
-        .register-card a {
-            color: #f5576c;
+        .register-card .btn-register i {
+            margin-right: 8px;
+        }
+
+        .register-card .password-strength {
+            margin-top: 8px;
+            height: 4px;
+            border-radius: 4px;
+            background: rgba(255,255,255,0.1);
+            overflow: hidden;
+        }
+        .register-card .password-strength .bar {
+            height: 100%;
+            width: 0%;
+            border-radius: 4px;
+            transition: width 0.3s ease, background 0.3s ease;
+        }
+
+        .register-card .form-footer {
+            text-align: center;
+            margin-top: 20px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+        }
+        .register-card .form-footer a {
+            color: #ffd700;
             text-decoration: none;
+            font-weight: 600;
         }
-        .register-card a:hover {
+        .register-card .form-footer a:hover {
             text-decoration: underline;
+        }
+
+        .register-card .social-login {
+            margin-top: 25px;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 25px;
+        }
+        .register-card .social-login p {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        .register-card .social-login .btn-social {
+            display: inline-block;
+            width: 48px;
+            height: 48px;
+            line-height: 48px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 18px;
+            margin: 0 6px;
+            transition: all 0.3s ease;
+            cursor: default;
+        }
+        .register-card .social-login .btn-social:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+        }
+        .register-card .social-login .btn-social.google { color: #ea4335; }
+        .register-card .social-login .btn-social.github { color: #f0f6fc; }
+        .register-card .social-login .btn-social.facebook { color: #1877f2; }
+
+        .register-card .login-link {
+            text-align: center;
+            margin-top: 20px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+        }
+        .register-card .login-link a {
+            color: #ffd700;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .register-card .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: transparent;
+            border: none;
+            color: rgba(255,255,255,0.5);
+            cursor: pointer;
+            z-index: 10;
+        }
+        .password-toggle:hover {
+            color: rgba(255,255,255,0.8);
+        }
+
+        #registerMessage .alert {
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        @media (max-width: 480px) {
+            .register-card {
+                padding: 30px 20px;
+                margin: 20px;
+                border-radius: 20px;
+            }
+            .register-card .brand h3 { font-size: 26px; }
+            body::before, body::after { display: none; }
         }
     </style>
 </head>
@@ -63,48 +270,107 @@
 <div class="register-card">
     <div class="brand">
         <h3>📝 <span>Register</span></h3>
-        <p class="text-muted">Create your account</p>
+        <p>Create your account</p>
     </div>
 
     <form id="registerForm">
         <div class="mb-3">
             <div class="input-group">
-                <span class="input-group-text bg-light"><i class="fas fa-user"></i></span>
+                <span class="input-group-text"><i class="fas fa-user"></i></span>
                 <input type="text" id="fullName" class="form-control" placeholder="Full Name" required>
             </div>
         </div>
         <div class="mb-3">
             <div class="input-group">
-                <span class="input-group-text bg-light"><i class="fas fa-envelope"></i></span>
+                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
                 <input type="email" id="email" class="form-control" placeholder="Email Address" required>
             </div>
         </div>
-        <div class="mb-3">
+        <div class="mb-3 position-relative">
             <div class="input-group">
-                <span class="input-group-text bg-light"><i class="fas fa-lock"></i></span>
-                <input type="password" id="password" class="form-control" placeholder="Password" required>
+                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                <input type="password" id="password" class="form-control" placeholder="Password" required minlength="6">
+                <button type="button" class="password-toggle" onclick="togglePassword()">
+                    <i class="fas fa-eye" id="toggleIcon"></i>
+                </button>
+            </div>
+            <div class="password-strength">
+                <div class="bar" id="strengthBar"></div>
             </div>
         </div>
-        <button type="submit" class="btn-register">
-            <i class="fas fa-user-plus"></i> Register
-        </button>
-        <div id="message" class="mt-3 text-center"></div>
+        <button type="submit" class="btn-register"><i class="fas fa-user-plus"></i> Register</button>
+        <div id="registerMessage" class="mt-3 text-center"></div>
     </form>
 
-    <p class="text-center mt-3">
+    <div class="social-login">
+        <p>Or sign up with</p>
+        <div>
+            <span class="btn-social google"><i class="fab fa-google"></i></span>
+            <span class="btn-social github"><i class="fab fa-github"></i></span>
+            <span class="btn-social facebook"><i class="fab fa-facebook-f"></i></span>
+        </div>
+    </div>
+
+    <div class="login-link">
         Already have an account? <a href="/login">Sign In</a>
-    </p>
+    </div>
 </div>
 
 <script>
+    // ===== Toggle Password =====
+    function togglePassword() {
+        const passwordInput = document.getElementById('password');
+        const icon = document.getElementById('toggleIcon');
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            icon.className = 'fas fa-eye-slash';
+        } else {
+            passwordInput.type = 'password';
+            icon.className = 'fas fa-eye';
+        }
+    }
+
+    // ===== Password Strength =====
+    document.getElementById('password').addEventListener('input', function() {
+        const value = this.value;
+        const bar = document.getElementById('strengthBar');
+        let strength = 0;
+        if (value.length >= 6) strength += 25;
+        if (value.match(/[a-z]/)) strength += 25;
+        if (value.match(/[A-Z]/)) strength += 25;
+        if (value.match(/[0-9!@#$%^&*]/)) strength += 25;
+
+        bar.style.width = strength + '%';
+        if (strength <= 25) {
+            bar.style.background = '#ff6b6b';
+        } else if (strength <= 50) {
+            bar.style.background = '#ffd93d';
+        } else if (strength <= 75) {
+            bar.style.background = '#6bcb77';
+        } else {
+            bar.style.background = '#4d96ff';
+        }
+    });
+
+    // ===== Form Submit =====
     document.getElementById('registerForm').addEventListener('submit', function(e) {
         e.preventDefault();
-        const user = {
-            fullName: document.getElementById('fullName').value,
-            email: document.getElementById('email').value,
-            password: document.getElementById('password').value,
-            role: 'USER'
-        };
+        const fullName = document.getElementById('fullName').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+
+        if (!fullName || !email || !password) {
+            document.getElementById('registerMessage').innerHTML = '<div class="alert alert-warning">All fields are required</div>';
+            return;
+        }
+
+        if (password.length < 6) {
+            document.getElementById('registerMessage').innerHTML = '<div class="alert alert-warning">Password must be at least 6 characters</div>';
+            return;
+        }
+
+        const user = { fullName, email, password, role: 'USER' };
+
         fetch('/api/users/register', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -112,16 +378,20 @@
         })
             .then(response => response.text())
             .then(data => {
-                document.getElementById('message').innerHTML =
-                    '<div class="alert alert-success">✅ ' + data + ' Redirecting to login...</div>';
+                document.getElementById('registerMessage').innerHTML = `<div class="alert alert-success">✅ ${data} Redirecting...</div>`;
                 setTimeout(() => window.location.href = '/login', 2000);
             })
             .catch(error => {
-                document.getElementById('message').innerHTML =
-                    '<div class="alert alert-danger">❌ Registration failed. Try again.</div>';
+                document.getElementById('registerMessage').innerHTML = `<div class="alert alert-danger">❌ Registration failed. Please try again.</div>`;
             });
     });
+
+    // ===== Auto-focus name on load =====
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('fullName').focus();
+    });
 </script>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

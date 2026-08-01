@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Widgets - CMS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="/css/dark-mode.css">
+    <script src="/js/dark-mode.js" defer></script>
+    <script src="/js/theme-switcher.js" defer></script>
+    <style>
+        body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .main-wrapper { display: flex; min-height: 100vh; }
+        .sidebar {
+            width: 280px;
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255,255,255,0.12);
+            padding: 25px 18px;
+            min-height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+        [data-theme="dark"] .sidebar { background: rgba(0,0,0,0.4); border-right: 1px solid rgba(255,255,255,0.05); }
+        .sidebar .brand { color: white; font-size: 26px; font-weight: 700; text-align: center; padding-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 25px; }
+        .sidebar .brand span { color: #ffd700; }
+        .sidebar .nav-item { margin-bottom: 4px; }
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.7);
+            padding: 10px 16px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+        }
+        .sidebar .nav-link:hover { background: rgba(255,255,255,0.12); color: white; transform: translateX(4px); }
+        .sidebar .nav-link.active { background: rgba(255,255,255,0.18); color: white; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
+        .sidebar .nav-link i { width: 22px; text-align: center; }
+
+        .main-content { margin-left: 280px; padding: 25px 30px; width: calc(100% - 280px); min-height: 100vh; }
+        @media (max-width: 768px) {
+            .sidebar { width: 75px; padding: 15px 10px; }
+            .sidebar .brand { font-size: 18px; }
+            .sidebar .nav-link span { display: none; }
+            .sidebar .nav-link { justify-content: center; padding: 10px; }
+            .main-content { margin-left: 75px; width: calc(100% - 75px); padding: 15px; }
+        }
+
+        .top-bar {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 16px;
+            padding: 12px 24px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .top-bar h1 { color: white; font-weight: 700; margin: 0; font-size: 22px; }
+        .top-bar .user-info { color: white; display: flex; align-items: center; gap: 15px; }
+        .top-bar .user-info .logout-btn { color: #ff6b6b; text-decoration: none; font-weight: 500; font-size: 14px; transition: all 0.3s ease; }
+        .top-bar .user-info .logout-btn:hover { color: #ff4757; }
+
+        .glass-card {
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 22px 25px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        .glass-card:hover { box-shadow: 0 12px 48px rgba(0,0,0,0.15); }
+        .glass-card .card-title { color: white; font-weight: 600; font-size: 17px; }
+
+        .widget-preview {
+            background: rgba(255,255,255,0.04);
+            border-radius: 16px;
+            padding: 18px 20px;
+            border: 1px solid rgba(255,255,255,0.06);
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+        .widget-preview:hover {
+            background: rgba(255,255,255,0.08);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+        }
+        .widget-preview h6 {
+            color: white;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .widget-preview ul {
+            color: rgba(255,255,255,0.8);
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .widget-preview ul li {
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            font-size: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .widget-preview ul li:last-child { border-bottom: none; }
+        .widget-preview .stat-number { font-weight: 700; color: #ffd700; }
+        .widget-preview .badge-count {
+            background: rgba(102,126,234,0.3);
+            color: white;
+            padding: 1px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+        }
+
+        .widget-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        @media (max-width: 576px) {
+            .widget-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div class="main-wrapper">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="brand">📝 <span>CMS</span></div>
+        <nav>
+            <div class="nav-item"><a href="/dashboard" class="nav-link"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></div>
+            <div class="nav-item"><a href="/articles" class="nav-link"><i class="fas fa-newspaper"></i> <span>Articles</span></a></div>
+            <div class="nav-item"><a href="/categories" class="nav-link"><i class="fas fa-folder"></i> <span>Categories</span></a></div>
+            <div class="nav-item"><a href="/tags" class="nav-link"><i class="fas fa-tags"></i> <span>Tags</span></a></div>
+            <div class="nav-item"><a href="/pages" class="nav-link"><i class="fas fa-file"></i> <span>Pages</span></a></div>
+            <div class="nav-item"><a href="/media" class="nav-link"><i class="fas fa-images"></i> <span>Media</span></a></div>
+            <div class="nav-item"><a href="/comments" class="nav-link"><i class="fas fa-comments"></i> <span>Comments</span></a></div>
+            <div class="nav-item"><a href="/menus" class="nav-link"><i class="fas fa-bars"></i> <span>Menus</span></a></div>
+            <div class="nav-item"><a href="/products" class="nav-link"><i class="fas fa-box"></i> <span>Products</span></a></div>
+            <div class="nav-item"><a href="/widgets" class="nav-link active"><i class="fas fa-puzzle-piece"></i> <span>Widgets</span></a></div>
+            <div class="nav-item"><a href="/forms" class="nav-link"><i class="fas fa-file-alt"></i> <span>Forms</span></a></div>
+            <div class="nav-item"><a href="/faqs" class="nav-link"><i class="fas fa-question-circle"></i> <span>FAQs</span></a></div>
+            <div class="nav-item"><a href="/testimonials" class="nav-link"><i class="fas fa-star"></i> <span>Testimonials</span></a></div>
+            <div class="nav-item"><a href="/events" class="nav-link"><i class="fas fa-calendar"></i> <span>Events</span></a></div>
+            <div class="nav-item"><a href="/calendar" class="nav-link"><i class="fas fa-calendar-alt"></i> <span>Calendar</span></a></div>
+            <div class="nav-item"><a href="/portfolios" class="nav-link"><i class="fas fa-briefcase"></i> <span>Portfolios</span></a></div>
+            <div class="nav-item"><a href="/jobs" class="nav-link"><i class="fas fa-briefcase"></i> <span>Jobs</span></a></div>
+            <div class="nav-item"><a href="/news" class="nav-link"><i class="fas fa-bullhorn"></i> <span>News</span></a></div>
+            <div class="nav-item"><a href="/backup" class="nav-link"><i class="fas fa-database"></i> <span>Backup</span></a></div>
+            <div class="nav-item"><a href="/version-history" class="nav-link"><i class="fas fa-history"></i> <span>Versions</span></a></div>
+            <div class="nav-item"><a href="/users" class="nav-link"><i class="fas fa-users"></i> <span>Users</span></a></div>
+        </nav>
+    </div>
+
+    <div class="main-content">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <h1>🧩 Widgets</h1>
+            <div class="user-info">
+                <i class="fas fa-user-circle" style="font-size:22px;"></i>
+                <span>Admin</span>
+                <a href="/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <h5 class="card-title"><i class="fas fa-th-list"></i> Available Widgets</h5>
+            <div class="widget-grid">
+                <!-- Widget: Recent Posts -->
+                <div class="widget-preview">
+                    <h6><i class="fas fa-clock" style="color:#667eea;"></i> Recent Posts</h6>
+                    <ul id="recentPosts">
+                        <li class="text-white-50">Loading...</li>
+                    </ul>
+                </div>
+
+                <!-- Widget: Popular Posts -->
+                <div class="widget-preview">
+                    <h6><i class="fas fa-fire" style="color:#e74c3c;"></i> Popular Posts</h6>
+                    <ul id="popularPosts">
+                        <li class="text-white-50">Loading...</li>
+                    </ul>
+                </div>
+
+                <!-- Widget: Categories -->
+                <div class="widget-preview">
+                    <h6><i class="fas fa-folder" style="color:#f1c40f;"></i> Categories</h6>
+                    <ul id="categoryList">
+                        <li class="text-white-50">Loading...</li>
+                    </ul>
+                </div>
+
+                <!-- Widget: Stats -->
+                <div class="widget-preview">
+                    <h6><i class="fas fa-chart-simple" style="color:#2ecc71;"></i> Stats</h6>
+                    <ul id="statsList">
+                        <li class="text-white-50">Loading...</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<script>
+    toastr.options = { "closeButton": true, "progressBar": true, "positionClass": "toast-top-right", "timeOut": "3000" };
+
+    // ===== Load Recent Posts =====
+    function loadRecentPosts() {
+        fetch('/api/widgets/recent-posts')
+            .then(r => r.json())
+            .then(posts => {
+                const ul = document.getElementById('recentPosts');
+                if (!posts || posts.length === 0) {
+                    ul.innerHTML = '<li class="text-white-50">No recent posts</li>';
+                    return;
+                }
+                ul.innerHTML = posts.map(p => `<li>📄 ${p.title}</li>`).join('');
+            })
+            .catch(() => {
+                document.getElementById('recentPosts').innerHTML = '<li class="text-danger">Failed to load</li>';
+            });
+    }
+
+    // ===== Load Popular Posts =====
+    function loadPopularPosts() {
+        fetch('/api/widgets/popular-posts')
+            .then(r => r.json())
+            .then(posts => {
+                const ul = document.getElementById('popularPosts');
+                if (!posts || posts.length === 0) {
+                    ul.innerHTML = '<li class="text-white-50">No popular posts</li>';
+                    return;
+                }
+                ul.innerHTML = posts.map(p =>
+                    `<li>🔥 ${p.title} <span class="badge-count">${p.likes || 0} likes</span></li>`
+                ).join('');
+            })
+            .catch(() => {
+                document.getElementById('popularPosts').innerHTML = '<li class="text-danger">Failed to load</li>';
+            });
+    }
+
+    // ===== Load Categories =====
+    function loadCategories() {
+        fetch('/api/widgets/categories')
+            .then(r => r.json())
+            .then(cats => {
+                const ul = document.getElementById('categoryList');
+                if (!cats || cats.length === 0) {
+                    ul.innerHTML = '<li class="text-white-50">No categories</li>';
+                    return;
+                }
+                ul.innerHTML = cats.map(c =>
+                    `<li>📁 ${c.name} <span class="badge-count">${c.articles ? c.articles.length : 0}</span></li>`
+                ).join('');
+            })
+            .catch(() => {
+                document.getElementById('categoryList').innerHTML = '<li class="text-danger">Failed to load</li>';
+            });
+    }
+
+    // ===== Load Stats =====
+    function loadStats() {
+        fetch('/api/widgets/stats')
+            .then(r => r.json())
+            .then(stats => {
+                const ul = document.getElementById('statsList');
+                if (!stats) {
+                    ul.innerHTML = '<li class="text-white-50">No stats available</li>';
+                    return;
+                }
+                const items = [
+                    { label: 'Total Articles', value: stats.articles || 0, icon: '📄' },
+                    { label: 'Categories', value: stats.categories || 0, icon: '📁' },
+                    { label: 'Published', value: stats.published || 0, icon: '✅' },
+                    { label: 'Drafts', value: stats.drafts || 0, icon: '📝' }
+                ];
+                ul.innerHTML = items.map(item =>
+                    `<li>${item.icon} ${item.label} <span class="stat-number">${item.value}</span></li>`
+                ).join('');
+            })
+            .catch(() => {
+                document.getElementById('statsList').innerHTML = '<li class="text-danger">Failed to load</li>';
+            });
+    }
+
+    // ===== Load All Widgets =====
+    function loadAllWidgets() {
+        loadRecentPosts();
+        loadPopularPosts();
+        loadCategories();
+        loadStats();
+    }
+
+    // ===== Auto-refresh every 30 seconds =====
+    loadAllWidgets();
+    setInterval(loadAllWidgets, 30000);
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

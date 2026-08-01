@@ -6,159 +6,180 @@
     <title>Dashboard - CMS</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="/css/dark-mode.css">
+    <script src="/js/dark-mode.js" defer></script>
+    <script src="/js/theme-switcher.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* Global Styles */
-        body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        .main-wrapper {
-            display: flex;
-            min-height: 100vh;
-        }
-
-        /* Sidebar */
+        /* ===== BASE ===== */
+        body { min-height: 100vh; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .main-wrapper { display: flex; min-height: 100vh; }
         .sidebar {
             width: 280px;
-            background: rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.12);
             backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-right: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 30px 20px;
+            border-right: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 25px 18px;
             min-height: 100vh;
             position: fixed;
             left: 0;
             top: 0;
             height: 100vh;
             overflow-y: auto;
-            transition: all 0.3s ease;
             z-index: 1000;
+            transition: all 0.3s ease;
         }
-
+        [data-theme="dark"] .sidebar {
+            background: rgba(0, 0, 0, 0.4);
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+        }
         .sidebar .brand {
             color: white;
-            font-size: 28px;
+            font-size: 26px;
             font-weight: 700;
             text-align: center;
-            padding-bottom: 30px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            margin-bottom: 30px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 25px;
         }
-
-        .sidebar .brand span {
-            color: #ffd700;
-        }
-
-        .sidebar .nav-item {
-            margin-bottom: 8px;
-        }
-
+        .sidebar .brand span { color: #ffd700; }
+        .sidebar .nav-item { margin-bottom: 4px; }
         .sidebar .nav-link {
-            color: rgba(255, 255, 255, 0.7);
-            padding: 12px 18px;
+            color: rgba(255,255,255,0.7);
+            padding: 10px 16px;
             border-radius: 12px;
             transition: all 0.3s ease;
             font-weight: 500;
             display: flex;
             align-items: center;
             gap: 12px;
+            font-size: 14px;
         }
-
         .sidebar .nav-link:hover {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255,255,255,0.12);
             color: white;
-            transform: translateX(5px);
+            transform: translateX(4px);
         }
-
         .sidebar .nav-link.active {
-            background: rgba(255, 255, 255, 0.25);
+            background: rgba(255,255,255,0.18);
             color: white;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
         }
+        .sidebar .nav-link i { width: 22px; text-align: center; font-size: 16px; }
 
-        .sidebar .nav-link i {
-            width: 24px;
-            text-align: center;
-        }
-
-        /* Main Content */
+        /* ===== MAIN CONTENT ===== */
         .main-content {
             margin-left: 280px;
-            padding: 30px;
+            padding: 25px 30px;
             width: calc(100% - 280px);
             min-height: 100vh;
         }
+        @media (max-width: 768px) {
+            .sidebar { width: 75px; padding: 15px 10px; }
+            .sidebar .brand { font-size: 18px; }
+            .sidebar .nav-link span { display: none; }
+            .sidebar .nav-link { justify-content: center; padding: 10px; }
+            .main-content { margin-left: 75px; width: calc(100% - 75px); padding: 15px; }
+        }
 
-        /* Glass Cards */
-        .glass-card {
-            background: rgba(255, 255, 255, 0.15);
+        /* ===== TOP BAR ===== */
+        .top-bar {
+            background: rgba(255,255,255,0.1);
             backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 20px;
-            padding: 25px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 16px;
+            padding: 12px 24px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .top-bar h1 {
+            color: white;
+            font-weight: 700;
+            margin: 0;
+            font-size: 22px;
+        }
+        .top-bar .user-info {
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .top-bar .user-info .logout-btn {
+            color: #ff6b6b;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
             transition: all 0.3s ease;
         }
+        .top-bar .user-info .logout-btn:hover { color: #ff4757; }
 
-        .glass-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.2);
+        /* ===== GLASS CARDS ===== */
+        .glass-card {
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 22px 25px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
         }
-
+        .glass-card:hover {
+            box-shadow: 0 12px 48px rgba(0,0,0,0.15);
+        }
         .glass-card .card-title {
             color: white;
             font-weight: 600;
+            font-size: 17px;
         }
 
-        /* Stat Cards - Clickable */
+        /* ===== STAT CARDS ===== */
         .stat-card {
-            background: rgba(255, 255, 255, 0.15);
+            background: rgba(255,255,255,0.1);
             backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 20px;
-            padding: 25px;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 18px;
+            padding: 22px 20px;
             color: white;
             text-align: center;
             transition: all 0.3s ease;
             cursor: pointer;
             text-decoration: none;
             display: block;
+            height: 100%;
         }
-
         .stat-card:hover {
-            transform: scale(1.05);
-            background: rgba(255, 255, 255, 0.25);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            transform: translateY(-6px) scale(1.02);
+            background: rgba(255,255,255,0.18);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.2);
         }
-
         .stat-card .stat-icon {
-            font-size: 40px;
-            margin-bottom: 15px;
+            font-size: 32px;
+            margin-bottom: 10px;
         }
-
         .stat-card .stat-number {
-            font-size: 36px;
+            font-size: 32px;
             font-weight: 700;
         }
-
         .stat-card .stat-label {
-            font-size: 16px;
+            font-size: 14px;
             opacity: 0.8;
+            margin-top: 4px;
         }
+        .stat-card.color-1 { background: rgba(102,126,234,0.35); }
+        .stat-card.color-2 { background: rgba(46,204,113,0.35); }
+        .stat-card.color-3 { background: rgba(241,196,15,0.35); }
+        .stat-card.color-4 { background: rgba(231,76,60,0.35); }
+        .stat-card.color-5 { background: rgba(52,152,219,0.35); }
+        .stat-card.color-6 { background: rgba(155,89,182,0.35); }
 
-        .stat-card.color-1 { background: rgba(102, 126, 234, 0.4); }
-        .stat-card.color-2 { background: rgba(46, 204, 113, 0.4); }
-        .stat-card.color-3 { background: rgba(241, 196, 15, 0.4); }
-        .stat-card.color-4 { background: rgba(231, 76, 60, 0.4); }
-
-        /* Glass Buttons */
+        /* ===== BUTTONS ===== */
         .btn-glass {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255,255,255,0.12);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255,255,255,0.15);
             color: white;
             padding: 12px 25px;
             border-radius: 30px;
@@ -168,62 +189,57 @@
             text-decoration: none;
             display: block;
             text-align: center;
+            font-size: 14px;
         }
-
         .btn-glass:hover {
-            background: rgba(255, 255, 255, 0.3);
+            background: rgba(255,255,255,0.25);
             color: white;
-            transform: scale(1.02);
+            transform: translateY(-3px) scale(1.01);
         }
+        .btn-glass.primary { background: rgba(102,126,234,0.5); }
+        .btn-glass.success { background: rgba(46,204,113,0.5); }
+        .btn-glass.warning { background: rgba(241,196,15,0.5); }
+        .btn-glass.danger { background: rgba(231,76,60,0.5); }
+        .btn-glass.info { background: rgba(52,152,219,0.5); }
 
-        .btn-glass.primary { background: rgba(102, 126, 234, 0.6); }
-        .btn-glass.success { background: rgba(46, 204, 113, 0.6); }
-        .btn-glass.warning { background: rgba(241, 196, 15, 0.6); }
+        /* ===== CHARTS ===== */
+        .chart-container { position: relative; height: 200px; }
 
-        .top-bar {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 20px;
-            padding: 15px 25px;
-            margin-bottom: 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .top-bar h1 {
-            color: white;
-            font-weight: 700;
-            margin: 0;
-        }
-
-        .top-bar .user-info {
-            color: white;
+        /* ===== ACTIVITY ===== */
+        .activity-item {
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            color: rgba(255,255,255,0.8);
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
         }
-
-        .top-bar .user-info .logout-btn {
-            color: #ff6b6b;
-            text-decoration: none;
-            font-weight: 500;
+        .activity-item:last-child { border-bottom: none; }
+        .activity-item .icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
         }
+        .activity-item .text { flex: 1; }
+        .activity-item .text .title { font-weight: 500; }
+        .activity-item .text .date { font-size: 12px; opacity: 0.5; }
+        .activity-item .badge-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+        .badge-dot.green { background: #2ecc71; }
+        .badge-dot.blue { background: #3498db; }
+        .badge-dot.yellow { background: #f1c40f; }
+        .badge-dot.red { background: #e74c3c; }
 
-        .top-bar .user-info .logout-btn:hover {
-            color: #ff4757;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 80px;
-                padding: 20px 10px;
-            }
-            .sidebar .brand { font-size: 18px; }
-            .sidebar .nav-link span { display: none; }
-            .main-content { margin-left: 80px; width: calc(100% - 80px); padding: 15px; }
+        @media (max-width: 576px) {
+            .stat-card .stat-number { font-size: 24px; }
+            .stat-card .stat-icon { font-size: 24px; }
+            .glass-card { padding: 16px; }
+            .top-bar { flex-direction: column; gap: 10px; }
+            .top-bar h1 { font-size: 18px; }
         }
     </style>
 </head>
@@ -236,89 +252,234 @@
             <div class="nav-item"><a href="/dashboard" class="nav-link active"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></div>
             <div class="nav-item"><a href="/articles" class="nav-link"><i class="fas fa-newspaper"></i> <span>Articles</span></a></div>
             <div class="nav-item"><a href="/categories" class="nav-link"><i class="fas fa-folder"></i> <span>Categories</span></a></div>
+            <div class="nav-item"><a href="/tags" class="nav-link"><i class="fas fa-tags"></i> <span>Tags</span></a></div>
+            <div class="nav-item"><a href="/pages" class="nav-link"><i class="fas fa-file"></i> <span>Pages</span></a></div>
+            <div class="nav-item"><a href="/media" class="nav-link"><i class="fas fa-images"></i> <span>Media</span></a></div>
+            <div class="nav-item"><a href="/comments" class="nav-link"><i class="fas fa-comments"></i> <span>Comments</span></a></div>
+            <div class="nav-item"><a href="/menus" class="nav-link"><i class="fas fa-bars"></i> <span>Menus</span></a></div>
+            <div class="nav-item"><a href="/products" class="nav-link"><i class="fas fa-box"></i> <span>Products</span></a></div>
+            <div class="nav-item"><a href="/widgets" class="nav-link"><i class="fas fa-puzzle-piece"></i> <span>Widgets</span></a></div>
+            <div class="nav-item"><a href="/forms" class="nav-link"><i class="fas fa-file-alt"></i> <span>Forms</span></a></div>
+            <div class="nav-item"><a href="/faqs" class="nav-link"><i class="fas fa-question-circle"></i> <span>FAQs</span></a></div>
+            <div class="nav-item"><a href="/testimonials" class="nav-link"><i class="fas fa-star"></i> <span>Testimonials</span></a></div>
+            <div class="nav-item"><a href="/events" class="nav-link"><i class="fas fa-calendar"></i> <span>Events</span></a></div>
+            <div class="nav-item"><a href="/calendar" class="nav-link"><i class="fas fa-calendar-alt"></i> <span>Calendar</span></a></div>
+            <div class="nav-item"><a href="/portfolios" class="nav-link"><i class="fas fa-briefcase"></i> <span>Portfolios</span></a></div>
+            <div class="nav-item"><a href="/jobs" class="nav-link"><i class="fas fa-briefcase"></i> <span>Jobs</span></a></div>
+            <div class="nav-item"><a href="/news" class="nav-link"><i class="fas fa-bullhorn"></i> <span>News</span></a></div>
+            <div class="nav-item"><a href="/backup" class="nav-link"><i class="fas fa-database"></i> <span>Backup</span></a></div>
+            <div class="nav-item"><a href="/version-history" class="nav-link"><i class="fas fa-history"></i> <span>Versions</span></a></div>
             <div class="nav-item"><a href="/users" class="nav-link"><i class="fas fa-users"></i> <span>Users</span></a></div>
         </nav>
     </div>
 
-    <!-- Main Content -->
     <div class="main-content">
         <!-- Top Bar -->
         <div class="top-bar">
             <h1>📊 Dashboard</h1>
             <div class="user-info">
-                <i class="fas fa-user-circle" style="font-size:24px;"></i>
-                <span>Admin</span>
+                <i class="fas fa-user-circle" style="font-size:22px;"></i>
+                <span id="userName">Admin</span>
                 <a href="/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
             </div>
         </div>
 
-        <!-- Stats - CLICKABLE -->
-        <div class="row mb-4">
-            <div class="col-md-3 mb-3">
-                <a href="/users" class="stat-card color-1">
-                    <div class="stat-icon"><i class="fas fa-users"></i></div>
-                    <div class="stat-number" id="userCount">0</div>
-                    <div class="stat-label">Total Users</div>
-                </a>
-            </div>
-            <div class="col-md-3 mb-3">
-                <a href="/articles" class="stat-card color-2">
-                    <div class="stat-icon"><i class="fas fa-newspaper"></i></div>
-                    <div class="stat-number" id="articleCount">0</div>
-                    <div class="stat-label">Total Articles</div>
-                </a>
-            </div>
-            <div class="col-md-3 mb-3">
-                <a href="/categories" class="stat-card color-3">
-                    <div class="stat-icon"><i class="fas fa-folder"></i></div>
-                    <div class="stat-number" id="categoryCount">0</div>
-                    <div class="stat-label">Categories</div>
-                </a>
-            </div>
-            <div class="col-md-3 mb-3">
-                <a href="#" class="stat-card color-4">
-                    <div class="stat-icon"><i class="fas fa-comments"></i></div>
-                    <div class="stat-number">0</div>
-                    <div class="stat-label">Comments</div>
-                </a>
+        <!-- Welcome Banner -->
+        <div class="glass-card" style="background:linear-gradient(135deg,rgba(102,126,234,0.3),rgba(118,75,162,0.3));border:1px solid rgba(255,255,255,0.08);">
+            <div class="d-flex align-items-center gap-3">
+                <div style="font-size:40px;">👋</div>
+                <div>
+                    <h4 style="color:white;font-weight:700;margin:0;">Welcome back, <span id="welcomeName">Admin</span>!</h4>
+                    <p style="color:rgba(255,255,255,0.7);margin:4px 0 0 0;">Here's what's happening with your CMS today.</p>
+                </div>
             </div>
         </div>
 
-        <!-- Quick Actions -->
-        <div class="row">
-            <div class="col-md-6 mb-3">
+        <!-- Stats -->
+        <div class="row g-3 mb-3">
+            <div class="col-md-2 col-6"><a href="/users" class="stat-card color-1"><div class="stat-icon"><i class="fas fa-users"></i></div><div class="stat-number" id="userCount">0</div><div class="stat-label">Total Users</div></a></div>
+            <div class="col-md-2 col-6"><a href="/articles" class="stat-card color-2"><div class="stat-icon"><i class="fas fa-newspaper"></i></div><div class="stat-number" id="articleCount">0</div><div class="stat-label">Total Articles</div></a></div>
+            <div class="col-md-2 col-6"><a href="/categories" class="stat-card color-3"><div class="stat-icon"><i class="fas fa-folder"></i></div><div class="stat-number" id="categoryCount">0</div><div class="stat-label">Categories</div></a></div>
+            <div class="col-md-2 col-6"><a href="/comments" class="stat-card color-4"><div class="stat-icon"><i class="fas fa-comments"></i></div><div class="stat-number" id="commentCount">0</div><div class="stat-label">Comments</div></a></div>
+            <div class="col-md-2 col-6"><a href="/tags" class="stat-card color-5"><div class="stat-icon"><i class="fas fa-tags"></i></div><div class="stat-number" id="tagCount">0</div><div class="stat-label">Tags</div></a></div>
+            <div class="col-md-2 col-6"><a href="/events" class="stat-card color-6"><div class="stat-icon"><i class="fas fa-calendar"></i></div><div class="stat-number" id="eventCount">0</div><div class="stat-label">Events</div></a></div>
+        </div>
+
+        <!-- Charts -->
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="glass-card">
+                    <h5 class="card-title"><i class="fas fa-chart-bar"></i> Articles per Category</h5>
+                    <div class="chart-container"><canvas id="categoryChart"></canvas></div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="glass-card">
+                    <h5 class="card-title"><i class="fas fa-chart-line"></i> Weekly Activity</h5>
+                    <div class="chart-container"><canvas id="activityChart"></canvas></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions & Recent Activity -->
+        <div class="row g-3">
+            <div class="col-md-6">
                 <div class="glass-card">
                     <h5 class="card-title"><i class="fas fa-bolt"></i> Quick Actions</h5>
-                    <div class="d-grid gap-3 mt-3">
+                    <div class="d-grid gap-2 mt-3">
                         <a href="/articles" class="btn-glass primary"><i class="fas fa-plus"></i> Create New Article</a>
                         <a href="/users" class="btn-glass success"><i class="fas fa-user-cog"></i> Manage Users</a>
                         <a href="/categories" class="btn-glass warning"><i class="fas fa-folder-plus"></i> Manage Categories</a>
+                        <a href="/events" class="btn-glass info"><i class="fas fa-calendar-plus"></i> Create Event</a>
                     </div>
                 </div>
             </div>
-            <div class="col-md-6 mb-3">
+            <div class="col-md-6">
                 <div class="glass-card">
                     <h5 class="card-title"><i class="fas fa-clock"></i> Recent Activity</h5>
-                    <p class="text-white-50 mt-3">No recent activity yet.</p>
+                    <div id="recentActivity"><p class="text-white-50 text-center py-3">Loading activity...</p></div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 <script>
-    fetch('/api/users/all').then(r => r.json()).then(data => {
-        document.getElementById('userCount').textContent = data.length;
-    }).catch(() => document.getElementById('userCount').textContent = '?');
+    toastr.options = { "closeButton": true, "progressBar": true, "positionClass": "toast-top-right", "timeOut": "3000" };
 
-    fetch('/api/articles').then(r => r.json()).then(data => {
-        document.getElementById('articleCount').textContent = data.length;
-    }).catch(() => document.getElementById('articleCount').textContent = '?');
+    // ===== Load User Name =====
+    fetch('/api/profile')
+        .then(r => r.json())
+        .then(user => {
+            document.getElementById('userName').textContent = user.fullName || 'Admin';
+            document.getElementById('welcomeName').textContent = user.fullName || 'Admin';
+        })
+        .catch(() => {});
 
-    fetch('/api/categories').then(r => r.json()).then(data => {
-        document.getElementById('categoryCount').textContent = data.length;
-    }).catch(() => document.getElementById('categoryCount').textContent = '?');
+    // ===== Load Stats =====
+    fetch('/api/users/all').then(r => r.json()).then(data => { document.getElementById('userCount').textContent = data.length; }).catch(() => { document.getElementById('userCount').textContent = '?'; });
+    fetch('/api/articles').then(r => r.json()).then(data => { document.getElementById('articleCount').textContent = data.length; }).catch(() => { document.getElementById('articleCount').textContent = '?'; });
+    fetch('/api/categories').then(r => r.json()).then(data => { document.getElementById('categoryCount').textContent = data.length; }).catch(() => { document.getElementById('categoryCount').textContent = '?'; });
+    fetch('/api/comments').then(r => r.json()).then(data => { document.getElementById('commentCount').textContent = data.length; }).catch(() => { document.getElementById('commentCount').textContent = '?'; });
+    fetch('/api/tags').then(r => r.json()).then(data => { document.getElementById('tagCount').textContent = data.length; }).catch(() => { document.getElementById('tagCount').textContent = '?'; });
+    fetch('/api/events').then(r => r.json()).then(data => { document.getElementById('eventCount').textContent = data.length; }).catch(() => { document.getElementById('eventCount').textContent = '?'; });
+
+    // ===== Recent Activity =====
+    fetch('/api/articles/page?page=0&size=5')
+        .then(r => r.json())
+        .then(data => {
+            const container = document.getElementById('recentActivity');
+            if (!data.content || data.content.length === 0) {
+                container.innerHTML = '<p class="text-white-50 text-center py-3">No recent activity.</p>';
+                return;
+            }
+            const colors = ['green', 'blue', 'yellow', 'red', 'blue'];
+            let html = '';
+            data.content.forEach((a, i) => {
+                const color = colors[i % colors.length];
+                html += `
+                    <div class="activity-item">
+                        <span class="badge-dot ${color}"></span>
+                        <div class="text">
+                            <div class="title">${a.title}</div>
+                            <div class="date">${a.createdAt ? new Date(a.createdAt).toLocaleDateString() : 'N/A'}</div>
+                        </div>
+                        <span style="font-size:12px;opacity:0.5;">${a.status || 'Draft'}</span>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        })
+        .catch(() => { document.getElementById('recentActivity').innerHTML = '<p class="text-white-50 text-center py-3">No recent activity.</p>'; });
+
+    // ===== Charts =====
+    function loadCharts() {
+        // Category Chart
+        fetch('/api/categories')
+            .then(r => r.json())
+            .then(categories => {
+                const labels = categories.map(c => c.name);
+                const data = categories.map(c => c.articles ? c.articles.length : 0);
+                new Chart(document.getElementById('categoryChart'), {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Articles per Category',
+                            data: data,
+                            backgroundColor: 'rgba(102,126,234,0.6)',
+                            borderColor: 'rgba(102,126,234,1)',
+                            borderWidth: 2,
+                            borderRadius: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { labels: { color: 'white' } } },
+                        scales: { y: { ticks: { color: 'white' } }, x: { ticks: { color: 'white' } } }
+                    }
+                });
+            })
+            .catch(() => console.error('Failed to load category chart'));
+
+        // Activity Chart
+        fetch('/api/articles')
+            .then(r => r.json())
+            .then(articles => {
+                const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                const counts = Array(7).fill(0);
+                articles.forEach(a => {
+                    if (a.createdAt) {
+                        const day = new Date(a.createdAt).getDay();
+                        counts[day]++;
+                    }
+                });
+                new Chart(document.getElementById('activityChart'), {
+                    type: 'line',
+                    data: {
+                        labels: days,
+                        datasets: [{
+                            label: 'Articles Created',
+                            data: counts,
+                            backgroundColor: 'rgba(46,204,113,0.2)',
+                            borderColor: 'rgba(46,204,113,1)',
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: 'rgba(46,204,113,1)',
+                            pointBorderColor: 'white',
+                            pointBorderWidth: 2,
+                            pointRadius: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { labels: { color: 'white' } } },
+                        scales: { y: { ticks: { color: 'white' } }, x: { ticks: { color: 'white' } } }
+                    }
+                });
+            })
+            .catch(() => console.error('Failed to load activity chart'));
+    }
+
+    // ===== Load Charts =====
+    setTimeout(loadCharts, 500);
+
+    // ===== Welcome Toast =====
+    setTimeout(() => { toastr.success('Welcome back, Admin!'); }, 800);
+
+    // ===== Auto-refresh stats every 30 seconds =====
+    setInterval(() => {
+        fetch('/api/users/all').then(r => r.json()).then(data => { document.getElementById('userCount').textContent = data.length; }).catch(() => {});
+        fetch('/api/articles').then(r => r.json()).then(data => { document.getElementById('articleCount').textContent = data.length; }).catch(() => {});
+        fetch('/api/categories').then(r => r.json()).then(data => { document.getElementById('categoryCount').textContent = data.length; }).catch(() => {});
+        fetch('/api/comments').then(r => r.json()).then(data => { document.getElementById('commentCount').textContent = data.length; }).catch(() => {});
+        fetch('/api/tags').then(r => r.json()).then(data => { document.getElementById('tagCount').textContent = data.length; }).catch(() => {});
+        fetch('/api/events').then(r => r.json()).then(data => { document.getElementById('eventCount').textContent = data.length; }).catch(() => {});
+    }, 30000);
 </script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

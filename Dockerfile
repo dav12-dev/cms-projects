@@ -1,28 +1,25 @@
-# Use official Java 17 image
-FROM eclipse-temurin:17-jdk-alpine
-
-# Set working directory
+# Stage 1: Build with Maven
+FROM maven:3.9.6-eclipse-temurin-17 AS build
 WORKDIR /app
 
-# Copy the Maven wrapper and pom.xml
-COPY .mvn .mvn
-COPY mvnw mvnw
+# Copy pom.xml and download dependencies
 COPY pom.xml .
+RUN mvn dependency:go-offline -B
 
-# Make mvnw executable
-RUN chmod +x mvnw
+# Copy source code and build
+COPY src ./src
+RUN mvn clean package -Dmaven.test.skip=true
 
-# Download dependencies
-RUN ./mvnw dependency:go-offline -B
+# Stage 2: Runtime with Java
+FROM eclipse-temurin:17-jre-alpine
+WORKDIR /app
 
-# Copy the source code
-COPY src src
+# Copy the JAR from the build stage
+COPY --from=build /app/target/*.jar app.jar
 
-# Build the application
-RUN ./mvnw package -DskipTests
-
-# Expose port
+# Expose port for documentation
 EXPOSE 8080
 
-# Run the application
-CMD ["java", "-jar", "target/*.jar"]
+# Run the application with the PORT environment variable from Render
+# This is the key fix - it uses Render's dynamic port
+ENTRYPOINT ["sh", "-c", "java -jar app.jar --server.port=${PORT:-8080}"]

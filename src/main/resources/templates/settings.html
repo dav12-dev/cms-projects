@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Settings - CMS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="/css/dark-mode.css">
+    <script src="/js/dark-mode.js" defer></script>
+    <script src="/js/theme-switcher.js" defer></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .settings-container {
+            max-width: 800px;
+            margin: 30px auto;
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 28px;
+            padding: 40px 35px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+        .settings-container:hover {
+            box-shadow: 0 30px 80px rgba(0,0,0,0.3);
+        }
+
+        .settings-container h2 {
+            color: white;
+            text-align: center;
+            margin-bottom: 10px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        .settings-container .subtitle {
+            text-align: center;
+            color: rgba(255,255,255,0.6);
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        .settings-container label {
+            color: white;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        .settings-container .form-control {
+            background: rgba(255,255,255,0.12) !important;
+            border: 1px solid rgba(255,255,255,0.2) !important;
+            color: white !important;
+            border-radius: 16px;
+            padding: 12px 18px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+        .settings-container .form-control::placeholder {
+            color: rgba(255,255,255,0.4);
+        }
+        .settings-container .form-control:focus {
+            background: rgba(255,255,255,0.2) !important;
+            border-color: rgba(255,255,255,0.5) !important;
+            box-shadow: 0 0 30px rgba(255,255,255,0.06);
+        }
+
+        .settings-container .btn-glass {
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: white;
+            padding: 12px 28px;
+            border-radius: 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 15px;
+        }
+        .settings-container .btn-glass:hover {
+            background: rgba(255,255,255,0.25);
+            color: white;
+            transform: translateY(-2px) scale(1.02);
+        }
+        .settings-container .btn-glass.success {
+            background: rgba(46,204,113,0.5);
+        }
+
+        .top-bar {
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 12px 20px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .top-bar h1 {
+            color: white;
+            font-weight: 700;
+            margin: 0;
+            font-size: 20px;
+        }
+        .top-bar .user-info {
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+        }
+        .top-bar .user-info .logout-btn {
+            color: #ff6b6b;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .top-bar .user-info .logout-btn:hover {
+            color: #ff4757;
+        }
+        .top-bar .back-link {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        .top-bar .back-link:hover {
+            color: white;
+        }
+
+        .setting-group {
+            margin-bottom: 20px;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .setting-group:last-child {
+            border-bottom: none;
+        }
+        .setting-group .group-title {
+            color: rgba(255,255,255,0.6);
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 576px) {
+            .settings-container {
+                padding: 25px 20px;
+                margin: 15px;
+                border-radius: 20px;
+            }
+            .top-bar {
+                flex-direction: column;
+                gap: 8px;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="settings-container">
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <a href="/dashboard" class="back-link"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+        <div class="user-info">
+            <i class="fas fa-user-circle" style="font-size:20px;"></i>
+            <span>Admin</span>
+            <a href="/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </div>
+
+    <h2>⚙️ Website Settings</h2>
+    <p class="subtitle">Configure your site preferences and information</p>
+
+    <form id="settingsForm">
+        <div id="settingsContainer">
+            <div class="text-center text-white-50 py-4">Loading settings...</div>
+        </div>
+        <button type="submit" class="btn-glass success w-100 mt-3"><i class="fas fa-save"></i> Save All Settings</button>
+    </form>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<script>
+    toastr.options = { "closeButton": true, "progressBar": true, "positionClass": "toast-top-right", "timeOut": "3000" };
+
+    function loadSettings() {
+        fetch('/api/settings')
+            .then(r => r.json())
+            .then(settings => {
+                const container = document.getElementById('settingsContainer');
+                if (!settings || settings.length === 0) {
+                    container.innerHTML = '<p class="text-center text-white-50 py-3">No settings available.</p>';
+                    return;
+                }
+
+                // Group settings by category (based on key prefix)
+                const groups = {
+                    site: { title: 'Site Information', keys: ['site_name', 'site_description', 'site_logo'] },
+                    social: { title: 'Social Media', keys: ['facebook_url', 'twitter_url', 'linkedin_url', 'instagram_url'] },
+                    footer: { title: 'Footer Settings', keys: ['footer_text'] },
+                    other: { title: 'Other Settings', keys: [] }
+                };
+
+                let html = '';
+                let processedKeys = new Set();
+
+                // Build each group
+                Object.entries(groups).forEach(([groupKey, group]) => {
+                    const items = group.keys.map(k => {
+                        const setting = settings.find(s => s.key === k);
+                        if (setting) {
+                            processedKeys.add(k);
+                            return `<div class="mb-3">
+                                <label>${k.replace(/_/g, ' ').toUpperCase()}</label>
+                                <input type="text" class="form-control" name="${setting.key}" value="${setting.value || ''}" placeholder="Enter ${k.replace(/_/g, ' ')}">
+                            </div>`;
+                        }
+                        return '';
+                    }).filter(Boolean);
+
+                    if (items.length) {
+                        html += `<div class="setting-group">
+                            <div class="group-title">${group.title}</div>
+                            ${items.join('')}
+                        </div>`;
+                    }
+                });
+
+                // Any remaining settings
+                const remaining = settings.filter(s => !processedKeys.has(s.key));
+                if (remaining.length) {
+                    html += `<div class="setting-group">
+                        <div class="group-title">Other Settings</div>
+                        ${remaining.map(s => `
+                            <div class="mb-3">
+                                <label>${s.key.replace(/_/g, ' ').toUpperCase()}</label>
+                                <input type="text" class="form-control" name="${s.key}" value="${s.value || ''}" placeholder="Enter ${s.key.replace(/_/g, ' ')}">
+                            </div>
+                        `).join('')}
+                    </div>`;
+                }
+
+                container.innerHTML = html;
+            })
+            .catch(() => {
+                document.getElementById('settingsContainer').innerHTML = '<p class="text-center text-danger py-3">Failed to load settings</p>';
+            });
+    }
+
+    loadSettings();
+
+    document.getElementById('settingsForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const inputs = this.querySelectorAll('input[type="text"]');
+        const promises = [];
+        inputs.forEach(input => {
+            const key = input.name;
+            const value = input.value;
+            promises.push(
+                fetch(`/api/settings/${key}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(value)
+                })
+            );
+        });
+        Promise.all(promises)
+            .then(() => toastr.success('All settings saved successfully!'))
+            .catch(() => toastr.error('Failed to save some settings'));
+    });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

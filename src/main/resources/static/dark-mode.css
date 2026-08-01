@@ -1,0 +1,232 @@
+/* ============================================================
+   Dark Mode CSS Variables
+   ============================================================ */
+
+:root {
+    --bg-gradient-start: #667eea;
+    --bg-gradient-end: #764ba2;
+    --text-color: #ffffff;
+    --card-bg: rgba(255, 255, 255, 0.15);
+    --card-border: rgba(255, 255, 255, 0.2);
+    --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    --table-border: rgba(255, 255, 255, 0.1);
+    --input-bg: rgba(255, 255, 255, 0.15);
+    --input-border: rgba(255, 255, 255, 0.2);
+    --input-focus-bg: rgba(255, 255, 255, 0.25);
+    --input-focus-border: rgba(255, 255, 255, 0.4);
+    --sidebar-bg: rgba(255, 255, 255, 0.15);
+    --sidebar-border: rgba(255, 255, 255, 0.2);
+    --brand-color: #ffd700;
+    --link-color: rgba(255, 255, 255, 0.7);
+    --link-hover: #ffffff;
+    --topbar-bg: rgba(255, 255, 255, 0.15);
+    --topbar-border: rgba(255, 255, 255, 0.2);
+    --glass-card: rgba(255, 255, 255, 0.15);
+    --badge-published: rgba(46, 204, 113, 0.8);
+    --badge-draft: rgba(241, 196, 15, 0.8);
+    --badge-cancelled: rgba(231, 76, 60, 0.8);
+    --stat-card-bg-1: rgba(102, 126, 234, 0.4);
+    --stat-card-bg-2: rgba(46, 204, 113, 0.4);
+    --stat-card-bg-3: rgba(241, 196, 15, 0.4);
+    --stat-card-bg-4: rgba(231, 76, 60, 0.4);
+    --stat-card-bg-5: rgba(52, 152, 219, 0.4);
+    --stat-card-bg-6: rgba(155, 89, 182, 0.4);
+    --comment-border: rgba(255, 255, 255, 0.1);
+    --comment-user: #ffffff;
+    --comment-content: rgba(255, 255, 255, 0.85);
+    --comment-date: rgba(255, 255, 255, 0.4);
+    --like-btn-bg: rgba(255, 255, 255, 0.1);
+    --like-btn-border: rgba(255, 255, 255, 0.2);
+    --like-btn-hover: rgba(231, 76, 60, 0.4);
+    --pagination-bg: rgba(255, 255, 255, 0.15);
+    --pagination-border: rgba(255, 255, 255, 0.2);
+    --pagination-active: rgba(102, 126, 234, 0.8);
+    --toast-bg: rgba(0, 0, 0, 0.8);
+    --toast-text: #ffffff;
+}
+
+[data-theme="dark"] {
+    --bg-gradient-start: #0f0c29;
+    --bg-gradient-end: #1a1a2e;
+    --text-color: #e0e0e0;
+    --card-bg: rgba(255, 255, 255, 0.05);
+    --card-border: rgba(255, 255, 255, 0.08);
+    --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+    --table-border: rgba(255, 255, 255, 0.05);
+    --input-bg: rgba(255, 255, 255, 0.05);
+    --input-border: rgba(255, 255, 255, 0.1);
+    --input-focus-bg: rgba(255, 255, 255, 0.1);
+    --input-focus-border: rgba(255, 255, 255, 0.3);
+    --sidebar-bg: rgba(0, 0, 0, 0.4);
+    --sidebar-border: rgba(255, 255, 255, 0.05);
+    --brand-color: #ffd700;
+    --link-color: rgba(255, 255, 255, 0.5);
+    --link-hover: #ffffff;
+    --topbar-bg: rgba(0, 0, 0, 0.4);
+    --topbar-border: rgba(255, 255, 255, 0.05);
+    --glass-card: rgba(0, 0, 0, 0.4);
+    --badge-published: rgba(46, 204, 113, 0.5);
+    --badge-draft: rgba(241, 196, 15, 0.5);
+    --badge-cancelled: rgba(231, 76, 60, 0.5);
+    --stat-card-bg-1: rgba(102, 126, 234, 0.2);
+    --stat-card-bg-2: rgba(46, 204, 113, 0.2);
+    --stat-card-bg-3: rgba(241, 196, 15, 0.2);
+    --stat-card-bg-4: rgba(231, 76, 60, 0.2);
+    --stat-card-bg-5: rgba(52, 152, 219, 0.2);
+    --stat-card-bg-6: rgba(155, 89, 182, 0.2);
+    --comment-border: rgba(255, 255, 255, 0.05);
+    --comment-user: #e0e0e0;
+    --comment-content: rgba(255, 255, 255, 0.6);
+    --comment-date: rgba(255, 255, 255, 0.25);
+    --like-btn-bg: rgba(255, 255, 255, 0.05);
+    --like-btn-border: rgba(255, 255, 255, 0.1);
+    --like-btn-hover: rgba(231, 76, 60, 0.3);
+    --pagination-bg: rgba(255, 255, 255, 0.05);
+    --pagination-border: rgba(255, 255, 255, 0.1);
+    --pagination-active: rgba(102, 126, 234, 0.5);
+    --toast-bg: rgba(20, 20, 30, 0.95);
+    --toast-text: #e0e0e0;
+}
+
+/* Apply variables to existing elements */
+body {
+    background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%) !important;
+    color: var(--text-color) !important;
+}
+
+.sidebar {
+    background: var(--sidebar-bg) !important;
+    border-right: 1px solid var(--sidebar-border) !important;
+}
+.sidebar .brand { color: var(--text-color) !important; }
+.sidebar .brand span { color: var(--brand-color) !important; }
+.sidebar .nav-link {
+    color: var(--link-color) !important;
+    transition: all 0.3s ease;
+}
+.sidebar .nav-link:hover {
+    color: var(--link-hover) !important;
+    background: rgba(255,255,255,0.08) !important;
+}
+.sidebar .nav-link.active {
+    color: var(--link-hover) !important;
+    background: rgba(255,255,255,0.12) !important;
+}
+
+.glass-card {
+    background: var(--glass-card) !important;
+    border: 1px solid var(--card-border) !important;
+    box-shadow: var(--card-shadow) !important;
+}
+.glass-card .card-title { color: var(--text-color) !important; }
+.glass-card label { color: var(--text-color) !important; }
+
+.top-bar {
+    background: var(--topbar-bg) !important;
+    border: 1px solid var(--topbar-border) !important;
+}
+.top-bar h1 { color: var(--text-color) !important; }
+.top-bar .user-info { color: var(--text-color) !important; }
+
+.form-control, .form-select {
+    background: var(--input-bg) !important;
+    border: 1px solid var(--input-border) !important;
+    color: var(--text-color) !important;
+    transition: all 0.3s ease;
+}
+.form-control:focus, .form-select:focus {
+    background: var(--input-focus-bg) !important;
+    border-color: var(--input-focus-border) !important;
+    box-shadow: 0 0 20px rgba(255,255,255,0.05) !important;
+}
+.form-select option { color: #333 !important; }
+
+.table { color: var(--text-color) !important; }
+.table thead th {
+    color: rgba(255,255,255,0.6) !important;
+    border-bottom: 1px solid var(--table-border) !important;
+}
+.table tbody td {
+    border-bottom: 1px solid var(--table-border) !important;
+}
+.table tbody tr:hover {
+    background: rgba(255,255,255,0.03) !important;
+}
+
+.badge-published { background: var(--badge-published) !important; }
+.badge-draft { background: var(--badge-draft) !important; }
+.badge-cancelled { background: var(--badge-cancelled) !important; }
+
+.stat-card.color-1 { background: var(--stat-card-bg-1) !important; }
+.stat-card.color-2 { background: var(--stat-card-bg-2) !important; }
+.stat-card.color-3 { background: var(--stat-card-bg-3) !important; }
+.stat-card.color-4 { background: var(--stat-card-bg-4) !important; }
+.stat-card.color-5 { background: var(--stat-card-bg-5) !important; }
+.stat-card.color-6 { background: var(--stat-card-bg-6) !important; }
+
+.btn-glass {
+    background: rgba(255,255,255,0.08) !important;
+    border: 1px solid rgba(255,255,255,0.15) !important;
+    color: var(--text-color) !important;
+    transition: all 0.3s ease;
+}
+.btn-glass:hover {
+    background: rgba(255,255,255,0.15) !important;
+    color: var(--text-color) !important;
+    transform: scale(1.02);
+}
+.btn-glass.success { background: rgba(46,204,113,0.25) !important; }
+.btn-glass.primary { background: rgba(102,126,234,0.25) !important; }
+.btn-glass.warning { background: rgba(241,196,15,0.25) !important; }
+.btn-glass.danger { background: rgba(231,76,60,0.25) !important; }
+
+.comment-item {
+    border-bottom: 1px solid var(--comment-border) !important;
+}
+.comment-item .comment-user { color: var(--comment-user) !important; }
+.comment-item .comment-content { color: var(--comment-content) !important; }
+.comment-item .comment-date { color: var(--comment-date) !important; }
+
+.like-btn {
+    background: var(--like-btn-bg) !important;
+    border: 1px solid var(--like-btn-border) !important;
+    color: var(--text-color) !important;
+    transition: all 0.3s ease;
+}
+.like-btn:hover {
+    background: var(--like-btn-hover) !important;
+    transform: scale(1.05);
+}
+
+.pagination .page-link {
+    background: var(--pagination-bg) !important;
+    border: 1px solid var(--pagination-border) !important;
+    color: var(--text-color) !important;
+    transition: all 0.3s ease;
+}
+.pagination .page-link:hover {
+    background: rgba(255,255,255,0.15) !important;
+}
+.pagination .page-item.active .page-link {
+    background: var(--pagination-active) !important;
+    border-color: var(--pagination-active) !important;
+}
+
+.toast-container .toast {
+    background: var(--toast-bg) !important;
+    color: var(--toast-text) !important;
+}
+
+#darkModeToggle {
+    background: rgba(255,255,255,0.1) !important;
+    border: none !important;
+    padding: 5px 12px !important;
+    border-radius: 30px !important;
+    color: var(--text-color) !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+}
+#darkModeToggle:hover {
+    background: rgba(255,255,255,0.2) !important;
+    transform: rotate(20deg);
+}

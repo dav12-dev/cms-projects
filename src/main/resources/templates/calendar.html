@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Events Calendar - CMS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="/css/dark-mode.css">
+    <script src="/js/dark-mode.js" defer></script>
+    <script src="/js/theme-switcher.js" defer></script>
+    <style>
+        body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .main-wrapper { display: flex; min-height: 100vh; }
+        .sidebar {
+            width: 280px;
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255,255,255,0.12);
+            padding: 25px 18px;
+            min-height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+        [data-theme="dark"] .sidebar { background: rgba(0,0,0,0.4); border-right: 1px solid rgba(255,255,255,0.05); }
+        .sidebar .brand { color: white; font-size: 26px; font-weight: 700; text-align: center; padding-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 25px; }
+        .sidebar .brand span { color: #ffd700; }
+        .sidebar .nav-item { margin-bottom: 4px; }
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.7);
+            padding: 10px 16px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+        }
+        .sidebar .nav-link:hover { background: rgba(255,255,255,0.12); color: white; transform: translateX(4px); }
+        .sidebar .nav-link.active { background: rgba(255,255,255,0.18); color: white; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
+        .sidebar .nav-link i { width: 22px; text-align: center; }
+
+        .main-content { margin-left: 280px; padding: 25px 30px; width: calc(100% - 280px); min-height: 100vh; }
+        @media (max-width: 768px) {
+            .sidebar { width: 75px; padding: 15px 10px; }
+            .sidebar .brand { font-size: 18px; }
+            .sidebar .nav-link span { display: none; }
+            .sidebar .nav-link { justify-content: center; padding: 10px; }
+            .main-content { margin-left: 75px; width: calc(100% - 75px); padding: 15px; }
+        }
+
+        .top-bar {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 16px;
+            padding: 12px 24px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .top-bar h1 { color: white; font-weight: 700; margin: 0; font-size: 22px; }
+        .top-bar .user-info { color: white; display: flex; align-items: center; gap: 15px; }
+        .top-bar .user-info .logout-btn { color: #ff6b6b; text-decoration: none; font-weight: 500; font-size: 14px; transition: all 0.3s ease; }
+        .top-bar .user-info .logout-btn:hover { color: #ff4757; }
+
+        .glass-card {
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 22px 25px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        .glass-card:hover { box-shadow: 0 12px 48px rgba(0,0,0,0.15); }
+        .glass-card .card-title { color: white; font-weight: 600; font-size: 17px; }
+
+        .btn-glass {
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: white;
+            padding: 10px 22px;
+            border-radius: 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+        .btn-glass:hover { background: rgba(255,255,255,0.25); color: white; transform: translateY(-2px) scale(1.02); }
+        .btn-glass.primary { background: rgba(102,126,234,0.5); }
+
+        .month-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .month-nav h3 {
+            color: white;
+            margin: 0;
+            font-weight: 700;
+            font-size: 24px;
+        }
+        .month-nav .nav-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        .month-nav .nav-buttons .btn-glass {
+            padding: 8px 16px;
+        }
+
+        .calendar-wrapper {
+            overflow-x: auto;
+        }
+        .calendar {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 280px;
+        }
+        .calendar th {
+            color: rgba(255,255,255,0.8);
+            padding: 10px 6px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .calendar td {
+            border: 1px solid rgba(255,255,255,0.08);
+            padding: 4px;
+            vertical-align: top;
+            height: 80px;
+            min-width: 40px;
+            transition: all 0.3s ease;
+            cursor: default;
+            background: rgba(255,255,255,0.02);
+        }
+        .calendar td:hover {
+            background: rgba(255,255,255,0.06);
+        }
+        .calendar td .date-number {
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        .calendar td .date-number.today {
+            background: rgba(102,126,234,0.5);
+            color: white;
+            border-radius: 50%;
+            font-weight: 700;
+        }
+        .calendar td .date-number.other-month {
+            opacity: 0.3;
+        }
+
+        .calendar td .event-dot {
+            display: block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            margin: 2px auto;
+        }
+        .calendar td .event-dot.blue { background: #3498db; }
+        .calendar td .event-dot.green { background: #2ecc71; }
+        .calendar td .event-dot.yellow { background: #f1c40f; }
+        .calendar td .event-dot.red { background: #e74c3c; }
+        .calendar td .event-dot.purple { background: #9b59b6; }
+
+        .calendar td .event-item {
+            background: rgba(102,126,234,0.25);
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-size: 10px;
+            color: white;
+            margin-top: 2px;
+            cursor: pointer;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            transition: all 0.3s ease;
+            border-left: 2px solid rgba(102,126,234,0.6);
+        }
+        .calendar td .event-item:hover {
+            background: rgba(102,126,234,0.45);
+            transform: scale(1.02);
+        }
+        .calendar td .event-item.cancelled {
+            border-left-color: #e74c3c;
+            text-decoration: line-through;
+            opacity: 0.6;
+        }
+        .calendar td .event-item .more-indicator {
+            color: rgba(255,255,255,0.5);
+            font-size: 9px;
+        }
+
+        .calendar td.empty {
+            background: rgba(255,255,255,0.01);
+        }
+        .calendar td .day-events {
+            max-height: 56px;
+            overflow: hidden;
+        }
+
+        /* Event Detail Modal */
+        .event-detail-modal .modal-content {
+            background: rgba(20,20,35,0.95);
+            backdrop-filter: blur(25px);
+            color: white;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.12);
+            box-shadow: 0 25px 80px rgba(0,0,0,0.5);
+        }
+        .event-detail-modal .modal-header {
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            padding: 20px 25px;
+        }
+        .event-detail-modal .modal-header .btn-close {
+            filter: invert(1);
+        }
+        .event-detail-modal .modal-body {
+            padding: 25px;
+        }
+        .event-detail-modal .modal-footer {
+            border-top: 1px solid rgba(255,255,255,0.08);
+            padding: 15px 25px;
+        }
+        .event-detail-modal .modal-footer .btn-glass {
+            padding: 8px 24px;
+            font-size: 13px;
+        }
+
+        .event-detail-icon { font-size: 36px; margin-right: 15px; }
+        .event-detail-title { font-size: 22px; font-weight: 700; }
+        .event-detail-meta { color: rgba(255,255,255,0.6); font-size: 14px; margin-top: 4px; }
+        .event-detail-description { color: rgba(255,255,255,0.85); font-size: 15px; line-height: 1.7; margin-top: 12px; }
+
+        @media (max-width: 576px) {
+            .calendar td { height: 60px; padding: 2px; }
+            .calendar td .date-number { font-size: 12px; padding: 1px 4px; }
+            .calendar td .event-item { font-size: 8px; padding: 1px 4px; }
+            .calendar td .day-events { max-height: 40px; }
+            .month-nav h3 { font-size: 18px; }
+            .main-content { padding: 12px; }
+            .glass-card { padding: 16px; }
+        }
+    </style>
+</head>
+<body>
+<div class="main-wrapper">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="brand">📝 <span>CMS</span></div>
+        <nav>
+            <div class="nav-item"><a href="/dashboard" class="nav-link"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></div>
+            <div class="nav-item"><a href="/articles" class="nav-link"><i class="fas fa-newspaper"></i> <span>Articles</span></a></div>
+            <div class="nav-item"><a href="/categories" class="nav-link"><i class="fas fa-folder"></i> <span>Categories</span></a></div>
+            <div class="nav-item"><a href="/tags" class="nav-link"><i class="fas fa-tags"></i> <span>Tags</span></a></div>
+            <div class="nav-item"><a href="/pages" class="nav-link"><i class="fas fa-file"></i> <span>Pages</span></a></div>
+            <div class="nav-item"><a href="/media" class="nav-link"><i class="fas fa-images"></i> <span>Media</span></a></div>
+            <div class="nav-item"><a href="/comments" class="nav-link"><i class="fas fa-comments"></i> <span>Comments</span></a></div>
+            <div class="nav-item"><a href="/menus" class="nav-link"><i class="fas fa-bars"></i> <span>Menus</span></a></div>
+            <div class="nav-item"><a href="/products" class="nav-link"><i class="fas fa-box"></i> <span>Products</span></a></div>
+            <div class="nav-item"><a href="/widgets" class="nav-link"><i class="fas fa-puzzle-piece"></i> <span>Widgets</span></a></div>
+            <div class="nav-item"><a href="/forms" class="nav-link"><i class="fas fa-file-alt"></i> <span>Forms</span></a></div>
+            <div class="nav-item"><a href="/faqs" class="nav-link"><i class="fas fa-question-circle"></i> <span>FAQs</span></a></div>
+            <div class="nav-item"><a href="/testimonials" class="nav-link"><i class="fas fa-star"></i> <span>Testimonials</span></a></div>
+            <div class="nav-item"><a href="/events" class="nav-link"><i class="fas fa-calendar"></i> <span>Events</span></a></div>
+            <div class="nav-item"><a href="/calendar" class="nav-link active"><i class="fas fa-calendar-alt"></i> <span>Calendar</span></a></div>
+            <div class="nav-item"><a href="/portfolios" class="nav-link"><i class="fas fa-briefcase"></i> <span>Portfolios</span></a></div>
+            <div class="nav-item"><a href="/jobs" class="nav-link"><i class="fas fa-briefcase"></i> <span>Jobs</span></a></div>
+            <div class="nav-item"><a href="/news" class="nav-link"><i class="fas fa-bullhorn"></i> <span>News</span></a></div>
+            <div class="nav-item"><a href="/backup" class="nav-link"><i class="fas fa-database"></i> <span>Backup</span></a></div>
+            <div class="nav-item"><a href="/version-history" class="nav-link"><i class="fas fa-history"></i> <span>Versions</span></a></div>
+            <div class="nav-item"><a href="/users" class="nav-link"><i class="fas fa-users"></i> <span>Users</span></a></div>
+        </nav>
+    </div>
+
+    <div class="main-content">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <h1>📅 Events Calendar</h1>
+            <div class="user-info">
+                <i class="fas fa-user-circle" style="font-size:22px;"></i>
+                <span>Admin</span>
+                <a href="/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <!-- Month Navigation -->
+            <div class="month-nav">
+                <button class="btn-glass" onclick="changeMonth(-1)"><i class="fas fa-chevron-left"></i> Prev</button>
+                <h3 id="monthYear">January 2026</h3>
+                <div class="nav-buttons">
+                    <button class="btn-glass" onclick="goToToday()"><i class="fas fa-calendar-check"></i> Today</button>
+                    <button class="btn-glass" onclick="changeMonth(1)">Next <i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+
+            <!-- Calendar Grid -->
+            <div class="calendar-wrapper">
+                <table class="calendar">
+                    <thead>
+                    <tr>
+                        <th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th>
+                    </tr>
+                    </thead>
+                    <tbody id="calendarBody">
+                    <!-- Generated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Event Detail Modal -->
+<div class="modal fade event-detail-modal" id="eventDetailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle">Event Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                Loading...
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-glass" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<script>
+    toastr.options = { "closeButton": true, "progressBar": true, "positionClass": "toast-top-right", "timeOut": "3000" };
+
+    let currentDate = new Date();
+    let currentYear = currentDate.getFullYear();
+    let currentMonth = currentDate.getMonth();
+    let eventsCache = {};
+
+    // ===== Load Calendar =====
+    function loadCalendar(year, month) {
+        const url = `/api/events/month?year=${year}&month=${month+1}`;
+        fetch(url)
+            .then(r => r.json())
+            .then(events => {
+                eventsCache[`${year}-${month}`] = events;
+                renderCalendar(year, month, events);
+                document.getElementById('monthYear').textContent = new Date(year, month).toLocaleString('default', { month: 'long', year: 'numeric' });
+            })
+            .catch(err => {
+                console.error('Error loading events:', err);
+                toastr.error('Failed to load events');
+                renderCalendar(year, month, []);
+            });
+    }
+
+    // ===== Render Calendar =====
+    function renderCalendar(year, month, events) {
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const daysInPrevMonth = new Date(year, month, 0).getDate();
+        const today = new Date();
+
+        const tbody = document.getElementById('calendarBody');
+        let html = '';
+        let dayCount = 1;
+        let nextMonthCount = 1;
+
+        // Build event map by date (YYYY-MM-DD)
+        const eventMap = {};
+        if (events) {
+            events.forEach(e => {
+                const dateStr = e.eventDate;
+                if (!eventMap[dateStr]) eventMap[dateStr] = [];
+                eventMap[dateStr].push(e);
+            });
+        }
+
+        for (let row = 0; row < 6; row++) {
+            html += '<tr>';
+            for (let col = 0; col < 7; col++) {
+                const cellIndex = row * 7 + col;
+                let dateNumber = '';
+                let isCurrentMonth = true;
+                let actualYear = year;
+                let actualMonth = month;
+
+                if (row === 0 && col < firstDay) {
+                    // Previous month days
+                    dateNumber = daysInPrevMonth - firstDay + col + 1;
+                    isCurrentMonth = false;
+                    actualMonth = month === 0 ? 11 : month - 1;
+                    actualYear = month === 0 ? year - 1 : year;
+                } else if (dayCount > daysInMonth) {
+                    // Next month days
+                    dateNumber = nextMonthCount++;
+                    isCurrentMonth = false;
+                    actualMonth = month === 11 ? 0 : month + 1;
+                    actualYear = month === 11 ? year + 1 : year;
+                } else {
+                    dateNumber = dayCount++;
+                }
+
+                const actualDateStr = `${actualYear}-${String(actualMonth+1).padStart(2,'0')}-${String(dateNumber).padStart(2,'0')}`;
+                const dayEvents = eventMap[actualDateStr] || [];
+
+                const isToday = (actualYear === today.getFullYear() && actualMonth === today.getMonth() && dateNumber === today.getDate());
+
+                let cellClass = '';
+                if (!isCurrentMonth) cellClass = 'empty';
+                if (isToday) cellClass += ' today';
+
+                const dateClass = isToday ? 'date-number today' : 'date-number' + (!isCurrentMonth ? ' other-month' : '');
+
+                // Limit events to show in cell
+                const visibleEvents = dayEvents.slice(0, 3);
+                const hasMore = dayEvents.length > 3;
+
+                let eventHtml = '';
+                visibleEvents.forEach(e => {
+                    const dotColor = e.status === 'CANCELLED' ? 'red' :
+                        e.status === 'DRAFT' ? 'yellow' :
+                            'blue';
+                    eventHtml += `
+                        <div class="event-item ${e.status === 'CANCELLED' ? 'cancelled' : ''}" onclick="showEventDetail(${e.id})" title="${e.title}">
+                            ${e.title}
+                        </div>
+                    `;
+                });
+                if (hasMore) {
+                    eventHtml += `<div class="event-item" style="background:transparent;border-left-color:transparent;cursor:default;text-align:center;font-size:9px;color:rgba(255,255,255,0.4);">+${dayEvents.length-3} more</div>`;
+                }
+
+                html += `<td class="${cellClass}">
+                    <div style="display:flex;flex-direction:column;">
+                        <span class="${dateClass}">${dateNumber}</span>
+                        <div class="day-events">${eventHtml}</div>
+                    </div>
+                </td>`;
+            }
+            html += '</tr>';
+            if (dayCount > daysInMonth) break;
+        }
+        tbody.innerHTML = html;
+    }
+
+    // ===== Navigation =====
+    function changeMonth(delta) {
+        currentMonth += delta;
+        if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+        if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+        loadCalendar(currentYear, currentMonth);
+    }
+
+    function goToToday() {
+        const today = new Date();
+        currentYear = today.getFullYear();
+        currentMonth = today.getMonth();
+        loadCalendar(currentYear, currentMonth);
+    }
+
+    // ===== Show Event Detail =====
+    function showEventDetail(id) {
+        fetch(`/api/events/${id}`)
+            .then(r => r.json())
+            .then(event => {
+                const modalTitle = document.getElementById('modalTitle');
+                const modalBody = document.getElementById('modalBody');
+                modalTitle.textContent = event.title;
+
+                const statusBadge = event.status === 'PUBLISHED' ? '✅ Published' :
+                    event.status === 'CANCELLED' ? '❌ Cancelled' :
+                        '📝 Draft';
+
+                modalBody.innerHTML = `
+                    <div class="d-flex align-items-start">
+                        <div class="event-detail-icon">
+                            <i class="fas fa-calendar-day" style="color:#667eea;"></i>
+                        </div>
+                        <div>
+                            <div class="event-detail-title">${event.title}</div>
+                            <div class="event-detail-meta">
+                                <i class="far fa-calendar-alt"></i> ${event.eventDate || 'N/A'}
+                                ${event.eventTime ? ` <i class="far fa-clock"></i> ${event.eventTime}` : ''}
+                                ${event.location ? ` <i class="fas fa-map-marker-alt"></i> ${event.location}` : ''}
+                            </div>
+                            <div class="event-detail-meta" style="margin-top:4px;">
+                                <span class="badge ${event.status === 'PUBLISHED' ? 'badge-success' : event.status === 'CANCELLED' ? 'badge-danger' : 'badge-warning'}" style="background:${event.status === 'PUBLISHED' ? 'rgba(46,204,113,0.8)' : event.status === 'CANCELLED' ? 'rgba(231,76,60,0.8)' : 'rgba(241,196,15,0.8)'};color:white;padding:4px 14px;border-radius:20px;font-size:12px;">
+                                    ${statusBadge}
+                                </span>
+                            </div>
+                            ${event.description ? `<div class="event-detail-description">${event.description}</div>` : ''}
+                        </div>
+                    </div>
+                `;
+                const modal = new bootstrap.Modal(document.getElementById('eventDetailModal'));
+                modal.show();
+            })
+            .catch(err => {
+                toastr.error('Failed to load event details');
+                console.error('Error loading event detail:', err);
+            });
+    }
+
+    // ===== Initial Load =====
+    loadCalendar(currentYear, currentMonth);
+
+    // ===== Keyboard Navigation =====
+    document.addEventListener('keydown', function(e) {
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+        if (e.key === 'ArrowLeft') changeMonth(-1);
+        if (e.key === 'ArrowRight') changeMonth(1);
+    });
+</script>
+</body>
+</html>

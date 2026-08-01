@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Menus - CMS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="/css/dark-mode.css">
+    <script src="/js/dark-mode.js" defer></script>
+    <script src="/js/theme-switcher.js" defer></script>
+    <style>
+        body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .main-wrapper { display: flex; min-height: 100vh; }
+        .sidebar {
+            width: 280px;
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255,255,255,0.12);
+            padding: 25px 18px;
+            min-height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+        [data-theme="dark"] .sidebar { background: rgba(0,0,0,0.4); border-right: 1px solid rgba(255,255,255,0.05); }
+        .sidebar .brand { color: white; font-size: 26px; font-weight: 700; text-align: center; padding-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 25px; }
+        .sidebar .brand span { color: #ffd700; }
+        .sidebar .nav-item { margin-bottom: 4px; }
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.7);
+            padding: 10px 16px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+        }
+        .sidebar .nav-link:hover { background: rgba(255,255,255,0.12); color: white; transform: translateX(4px); }
+        .sidebar .nav-link.active { background: rgba(255,255,255,0.18); color: white; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
+        .sidebar .nav-link i { width: 22px; text-align: center; }
+
+        .main-content { margin-left: 280px; padding: 25px 30px; width: calc(100% - 280px); min-height: 100vh; }
+        @media (max-width: 768px) {
+            .sidebar { width: 75px; padding: 15px 10px; }
+            .sidebar .brand { font-size: 18px; }
+            .sidebar .nav-link span { display: none; }
+            .sidebar .nav-link { justify-content: center; padding: 10px; }
+            .main-content { margin-left: 75px; width: calc(100% - 75px); padding: 15px; }
+        }
+
+        .top-bar {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 16px;
+            padding: 12px 24px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .top-bar h1 { color: white; font-weight: 700; margin: 0; font-size: 22px; }
+        .top-bar .user-info { color: white; display: flex; align-items: center; gap: 15px; }
+        .top-bar .user-info .logout-btn { color: #ff6b6b; text-decoration: none; font-weight: 500; font-size: 14px; transition: all 0.3s ease; }
+        .top-bar .user-info .logout-btn:hover { color: #ff4757; }
+
+        .glass-card {
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 22px 25px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        .glass-card:hover { box-shadow: 0 12px 48px rgba(0,0,0,0.15); }
+        .glass-card .card-title { color: white; font-weight: 600; font-size: 17px; }
+        .glass-card label { color: white; font-weight: 500; font-size: 14px; }
+
+        .form-control, .form-select {
+            background: rgba(255,255,255,0.12) !important;
+            border: 1px solid rgba(255,255,255,0.2) !important;
+            color: white !important;
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        .form-control::placeholder { color: rgba(255,255,255,0.5); }
+        .form-control:focus, .form-select:focus {
+            background: rgba(255,255,255,0.2) !important;
+            border-color: rgba(255,255,255,0.5) !important;
+            box-shadow: 0 0 30px rgba(255,255,255,0.05);
+        }
+        .form-select option { color: #333; }
+
+        .btn-glass {
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: white;
+            padding: 10px 22px;
+            border-radius: 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+        .btn-glass:hover { background: rgba(255,255,255,0.25); color: white; transform: translateY(-2px) scale(1.02); }
+        .btn-glass.success { background: rgba(46,204,113,0.5); }
+        .btn-glass.primary { background: rgba(102,126,234,0.5); }
+        .btn-glass.warning { background: rgba(241,196,15,0.5); }
+        .btn-glass.danger { background: rgba(231,76,60,0.5); }
+
+        .table { color: white; }
+        .table thead th {
+            border-bottom: 1px solid rgba(255,255,255,0.15);
+            color: rgba(255,255,255,0.8);
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 12px 8px;
+        }
+        .table tbody td {
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            vertical-align: middle;
+            padding: 10px 8px;
+        }
+        .table tbody tr:hover { background: rgba(255,255,255,0.04); }
+
+        .badge-header { background: rgba(102,126,234,0.6); color: white; padding: 4px 14px; border-radius: 20px; font-size: 11px; }
+        .badge-footer { background: rgba(46,204,113,0.6); color: white; padding: 4px 14px; border-radius: 20px; font-size: 11px; }
+        .badge-sidebar { background: rgba(241,196,15,0.6); color: white; padding: 4px 14px; border-radius: 20px; font-size: 11px; }
+    </style>
+</head>
+<body>
+<div class="main-wrapper">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="brand">📝 <span>CMS</span></div>
+        <nav>
+            <div class="nav-item"><a href="/dashboard" class="nav-link"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></div>
+            <div class="nav-item"><a href="/articles" class="nav-link"><i class="fas fa-newspaper"></i> <span>Articles</span></a></div>
+            <div class="nav-item"><a href="/categories" class="nav-link"><i class="fas fa-folder"></i> <span>Categories</span></a></div>
+            <div class="nav-item"><a href="/tags" class="nav-link"><i class="fas fa-tags"></i> <span>Tags</span></a></div>
+            <div class="nav-item"><a href="/pages" class="nav-link"><i class="fas fa-file"></i> <span>Pages</span></a></div>
+            <div class="nav-item"><a href="/media" class="nav-link"><i class="fas fa-images"></i> <span>Media</span></a></div>
+            <div class="nav-item"><a href="/comments" class="nav-link"><i class="fas fa-comments"></i> <span>Comments</span></a></div>
+            <div class="nav-item"><a href="/menus" class="nav-link active"><i class="fas fa-bars"></i> <span>Menus</span></a></div>
+            <div class="nav-item"><a href="/products" class="nav-link"><i class="fas fa-box"></i> <span>Products</span></a></div>
+            <div class="nav-item"><a href="/widgets" class="nav-link"><i class="fas fa-puzzle-piece"></i> <span>Widgets</span></a></div>
+            <div class="nav-item"><a href="/forms" class="nav-link"><i class="fas fa-file-alt"></i> <span>Forms</span></a></div>
+            <div class="nav-item"><a href="/faqs" class="nav-link"><i class="fas fa-question-circle"></i> <span>FAQs</span></a></div>
+            <div class="nav-item"><a href="/testimonials" class="nav-link"><i class="fas fa-star"></i> <span>Testimonials</span></a></div>
+            <div class="nav-item"><a href="/events" class="nav-link"><i class="fas fa-calendar"></i> <span>Events</span></a></div>
+            <div class="nav-item"><a href="/calendar" class="nav-link"><i class="fas fa-calendar-alt"></i> <span>Calendar</span></a></div>
+            <div class="nav-item"><a href="/portfolios" class="nav-link"><i class="fas fa-briefcase"></i> <span>Portfolios</span></a></div>
+            <div class="nav-item"><a href="/jobs" class="nav-link"><i class="fas fa-briefcase"></i> <span>Jobs</span></a></div>
+            <div class="nav-item"><a href="/news" class="nav-link"><i class="fas fa-bullhorn"></i> <span>News</span></a></div>
+            <div class="nav-item"><a href="/backup" class="nav-link"><i class="fas fa-database"></i> <span>Backup</span></a></div>
+            <div class="nav-item"><a href="/version-history" class="nav-link"><i class="fas fa-history"></i> <span>Versions</span></a></div>
+            <div class="nav-item"><a href="/users" class="nav-link"><i class="fas fa-users"></i> <span>Users</span></a></div>
+        </nav>
+    </div>
+
+    <div class="main-content">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <h1>📋 Menus</h1>
+            <div class="user-info">
+                <i class="fas fa-user-circle" style="font-size:22px;"></i>
+                <span>Admin</span>
+                <a href="/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+        </div>
+
+        <!-- Create/Edit Menu -->
+        <div class="glass-card">
+            <h5 class="card-title" id="menuFormTitle"><i class="fas fa-plus"></i> Create New Menu</h5>
+            <form id="menuForm" class="row g-3">
+                <div class="col-md-4">
+                    <input type="text" id="menuName" class="form-control" placeholder="Menu Name" required>
+                </div>
+                <div class="col-md-4">
+                    <select id="menuLocation" class="form-select">
+                        <option value="HEADER">Header</option>
+                        <option value="FOOTER">Footer</option>
+                        <option value="SIDEBAR">Sidebar</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <button type="submit" class="btn-glass success w-100" id="submitMenuBtn"><i class="fas fa-save"></i> Create Menu</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Menu List -->
+        <div class="glass-card">
+            <h5 class="card-title"><i class="fas fa-list"></i> All Menus</h5>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead><tr><th>ID</th><th>Name</th><th>Location</th><th>Items</th><th>Actions</th></tr></thead>
+                    <tbody id="menusBody"><tr><td colspan="5" class="text-center text-white-50">Loading menus...</td></tr></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<script>
+    toastr.options = { "closeButton": true, "progressBar": true, "positionClass": "toast-top-right", "timeOut": "3000" };
+
+    let editingMenuId = null;
+
+    function loadMenus() {
+        fetch('/api/menus')
+            .then(r => r.json())
+            .then(menus => {
+                const tbody = document.getElementById('menusBody');
+                tbody.innerHTML = '';
+                if (!menus || menus.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center text-white-50">No menus found</td></tr>';
+                    return;
+                }
+                menus.forEach(m => {
+                    const locationBadge = m.location === 'HEADER' ? '<span class="badge-header">Header</span>' :
+                        m.location === 'FOOTER' ? '<span class="badge-footer">Footer</span>' :
+                            '<span class="badge-sidebar">Sidebar</span>';
+                    const itemCount = m.items ? m.items.length : 0;
+                    tbody.innerHTML += `<tr>
+                        <td>${m.id}</td>
+                        <td><strong>${m.name}</strong></td>
+                        <td>${locationBadge}</td>
+                        <td>${itemCount}</td>
+                        <td>
+                            <button class="btn-glass primary btn-sm" onclick="editMenu(${m.id})"><i class="fas fa-edit"></i></button>
+                            <button class="btn-glass danger btn-sm" onclick="deleteMenu(${m.id})"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>`;
+                });
+            })
+            .catch(() => toastr.error('Failed to load menus'));
+    }
+
+    document.getElementById('menuForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const name = document.getElementById('menuName').value.trim();
+        const location = document.getElementById('menuLocation').value;
+        if (!name) { toastr.warning('Menu name is required'); return; }
+
+        const menu = { name, location };
+        const method = editingMenuId ? 'PUT' : 'POST';
+        const url = editingMenuId ? `/api/menus/${editingMenuId}` : '/api/menus';
+
+        fetch(url, {
+            method,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(menu)
+        })
+            .then(r => r.json())
+            .then(() => {
+                clearMenuForm();
+                loadMenus();
+                toastr.success(editingMenuId ? 'Menu updated!' : 'Menu created!');
+            })
+            .catch(() => toastr.error('Failed to save menu'));
+    });
+
+    function editMenu(id) {
+        fetch(`/api/menus/${id}`)
+            .then(r => r.json())
+            .then(m => {
+                editingMenuId = id;
+                document.getElementById('menuName').value = m.name;
+                document.getElementById('menuLocation').value = m.location || 'HEADER';
+                document.getElementById('menuFormTitle').innerHTML = '<i class="fas fa-edit"></i> Edit Menu';
+                document.getElementById('submitMenuBtn').innerHTML = '<i class="fas fa-save"></i> Update Menu';
+                document.getElementById('submitMenuBtn').className = 'btn-glass primary w-100';
+            })
+            .catch(() => toastr.error('Failed to load menu'));
+    }
+
+    function deleteMenu(id) {
+        if (confirm('Delete this menu and all its items?')) {
+            fetch(`/api/menus/${id}`, { method: 'DELETE' })
+                .then(() => {
+                    loadMenus();
+                    toastr.success('Menu deleted');
+                })
+                .catch(() => toastr.error('Failed to delete'));
+        }
+    }
+
+    function clearMenuForm() {
+        editingMenuId = null;
+        document.getElementById('menuName').value = '';
+        document.getElementById('menuLocation').value = 'HEADER';
+        document.getElementById('menuFormTitle').innerHTML = '<i class="fas fa-plus"></i> Create New Menu';
+        document.getElementById('submitMenuBtn').innerHTML = '<i class="fas fa-save"></i> Create Menu';
+        document.getElementById('submitMenuBtn').className = 'btn-glass success w-100';
+    }
+
+    loadMenus();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

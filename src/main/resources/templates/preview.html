@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- ===== SEO Meta Tags ===== -->
+    <title th:text="${article.metaTitle != null ? article.metaTitle : article.title}">Article - CMS</title>
+    <meta name="description" th:content="${article.metaDescription != null ? article.metaDescription : 'Read this article'}">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" th:href="${article.canonicalUrl != null ? article.canonicalUrl : 'https://cms-final-klqt.onrender.com/article/' + article.slug}">
+
+    <!-- ===== Open Graph Tags (Facebook, LinkedIn, etc.) ===== -->
+    <meta property="og:title" th:content="${article.metaTitle != null ? article.metaTitle : article.title}" />
+    <meta property="og:description" th:content="${article.metaDescription != null ? article.metaDescription : 'Read this article'}" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" th:content="${'https://cms-final-klqt.onrender.com/article/' + article.slug}" />
+    <meta property="og:site_name" content="CMS - Content Management System" />
+    <meta property="og:image" content="https://cms-final-klqt.onrender.com/images/og-image.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <!-- ===== Twitter Card Tags ===== -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" th:content="${article.metaTitle != null ? article.metaTitle : article.title}" />
+    <meta name="twitter:description" th:content="${article.metaDescription != null ? article.metaDescription : 'Read this article'}" />
+    <meta name="twitter:image" content="https://cms-final-klqt.onrender.com/images/og-image.jpg" />
+
+    <!-- ===== Article Metadata ===== -->
+    <meta property="article:published_time" th:content="${#temporals.format(article.createdAt, 'yyyy-MM-dd')}" />
+    <meta property="article:author" th:content="${article.authorName != null ? article.authorName : 'Admin'}" />
+    <meta property="article:section" th:content="${article.category != null ? article.category.name : 'Uncategorized'}" />
+    <meta th:each="tag : ${article.tags}" property="article:tag" th:content="${tag.name}" />
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="/css/dark-mode.css">
+    <script src="/js/dark-mode.js" defer></script>
+
+    <style>
+        body { background: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .article-container { max-width: 800px; margin: 40px auto; background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
+        .article-title { font-size: 36px; font-weight: 700; color: #333; margin-bottom: 20px; }
+        .article-meta { color: #666; font-size: 14px; border-bottom: 1px solid #eee; padding-bottom: 20px; margin-bottom: 30px; }
+        .article-meta span { margin-right: 20px; }
+        .article-content { font-size: 18px; line-height: 1.8; color: #444; }
+        .article-content p { margin-bottom: 20px; }
+        .preview-banner { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px; text-align: center; border-radius: 10px; margin-bottom: 30px; }
+        .badge-category { background: #667eea; color: white; padding: 5px 15px; border-radius: 20px; font-size: 12px; }
+        .badge-status { background: #28a745; color: white; padding: 5px 15px; border-radius: 20px; font-size: 12px; }
+        .badge-status.draft { background: #ffc107; color: #333; }
+        .btn-back { background: #6c757d; color: white; padding: 10px 25px; border-radius: 30px; text-decoration: none; display: inline-block; transition: all 0.3s ease; }
+        .btn-back:hover { background: #5a6268; color: white; }
+        .btn-edit { background: #667eea; color: white; padding: 10px 25px; border-radius: 30px; text-decoration: none; display: inline-block; transition: all 0.3s ease; }
+        .btn-edit:hover { background: #5a6fd6; color: white; }
+        .share-btn { display: inline-block; padding: 8px 20px; border-radius: 30px; color: white; text-decoration: none; font-weight: 600; margin-right: 10px; transition: all 0.3s ease; }
+        .share-btn:hover { transform: scale(1.05); opacity: 0.9; color: white; }
+        .share-btn.facebook { background: #1877f2; }
+        .share-btn.twitter { background: #000000; }
+        .share-btn.linkedin { background: #0a66c2; }
+        .share-btn.whatsapp { background: #25d366; }
+        .share-section { margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; }
+        @media (max-width: 768px) { .article-container { padding: 20px; margin: 20px; } .article-title { font-size: 28px; } }
+    </style>
+</head>
+<body>
+<div class="article-container">
+    <!-- Preview Banner -->
+    <div class="preview-banner" th:if="${isPreview}">
+        <i class="fas fa-eye"></i> Preview Mode - This article is not yet published
+    </div>
+
+    <div class="d-flex justify-content-between align-items-start mb-3">
+        <span class="badge-category" th:text="${article.category != null ? article.category.name : 'Uncategorized'}">Category</span>
+        <span class="badge-status" th:classappend="${article.status == 'PUBLISHED'} ? '' : 'draft'" th:text="${article.status}">Status</span>
+    </div>
+
+    <h1 class="article-title" th:text="${article.title}">Article Title</h1>
+
+    <div class="article-meta">
+        <span><i class="far fa-user"></i> <span th:text="${article.authorName != null ? article.authorName : 'Admin'}">Author</span></span>
+        <span><i class="far fa-calendar-alt"></i> <span th:text="${#temporals.format(article.createdAt, 'MMMM dd, yyyy')}">Date</span></span>
+        <span><i class="far fa-clock"></i> <span th:text="${article.readingTime}">2 min read</span></span>
+        <span><i class="fas fa-eye"></i> <span th:text="${article.viewCount}">0</span> views</span>
+        <span th:if="${article.tags != null and !article.tags.isEmpty()}">
+                <i class="fas fa-tag"></i>
+                <span th:each="tag : ${article.tags}" th:text="'#' + tag.name" style="margin-right:5px;color:#667eea;"></span>
+            </span>
+        <span><i class="far fa-heart"></i> <span th:text="${article.likes != null ? article.likes : 0}">0</span></span>
+    </div>
+
+    <div class="article-content" th:utext="${article.content}">
+        Article content goes here.
+    </div>
+
+    <!-- Share Section -->
+    <div class="share-section">
+        <h5><i class="fas fa-share-alt"></i> Share this article</h5>
+        <div class="mt-3">
+            <a href="#" class="share-btn facebook"
+               th:href="'https://www.facebook.com/sharer/sharer.php?u=' + 'https://cms-final-klqt.onrender.com/article/' + ${article.slug}"
+               target="_blank" rel="noopener noreferrer">
+                <i class="fab fa-facebook-f"></i> Facebook
+            </a>
+            <a href="#" class="share-btn twitter"
+               th:href="'https://twitter.com/intent/tweet?text=' + ${article.title} + '&url=' + 'https://cms-final-klqt.onrender.com/article/' + ${article.slug}"
+               target="_blank" rel="noopener noreferrer">
+                <i class="fab fa-twitter"></i> Twitter
+            </a>
+            <a href="#" class="share-btn linkedin"
+               th:href="'https://www.linkedin.com/sharing/share-offsite/?url=' + 'https://cms-final-klqt.onrender.com/article/' + ${article.slug}"
+               target="_blank" rel="noopener noreferrer">
+                <i class="fab fa-linkedin-in"></i> LinkedIn
+            </a>
+            <a href="#" class="share-btn whatsapp"
+               th:href="'https://api.whatsapp.com/send?text=' + ${article.title} + ' - ' + 'https://cms-final-klqt.onrender.com/article/' + ${article.slug}"
+               target="_blank" rel="noopener noreferrer">
+                <i class="fab fa-whatsapp"></i> WhatsApp
+            </a>
+        </div>
+    </div>
+
+    <hr>
+
+    <div class="d-flex gap-2">
+        <a href="#" class="btn-back" onclick="history.back()"><i class="fas fa-arrow-left"></i> Back</a>
+        <a th:if="${isPreview}" th:href="'/articles'" class="btn-edit"><i class="fas fa-edit"></i> Edit Article</a>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
