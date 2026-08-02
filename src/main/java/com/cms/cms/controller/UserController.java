@@ -5,10 +5,12 @@ import com.cms.cms.dto.ResetRequest;
 import com.cms.cms.entity.User;
 import com.cms.cms.repository.UserRepository;
 import com.cms.cms.service.EmailService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -18,6 +20,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/users")
+@Slf4j
 public class UserController {
 
     @Autowired
@@ -31,27 +34,57 @@ public class UserController {
 
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
+    // ==============================
+    // REGISTER
+    // ==============================
     @PostMapping("/register")
+    @Transactional
     public String registerUser(@RequestBody User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        if (user.getRole() == null || user.getRole().isEmpty()) {
-            user.setRole("USER");
-        }
-        user.setActive(true);
-        if (user.getThemePreference() == null || user.getThemePreference().isEmpty()) {
-            user.setThemePreference("light");
-        }
-        userRepository.save(user);
+        try {
+            log.info("Registration attempt for email: {}", user.getEmail());
 
-        emailService.sendWelcomeEmail(user.getEmail(), user.getFullName());
-        return "User registered successfully!";
+            // Encode password
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+            // Set defaults
+            if (user.getRole() == null || user.getRole().isEmpty()) {
+                user.setRole("USER");
+            }
+            user.setActive(true);
+            if (user.getThemePreference() == null || user.getThemePreference().isEmpty()) {
+                user.setThemePreference("light");
+            }
+
+            // Save user
+            User savedUser = userRepository.save(user);
+            log.info("User saved with ID: {}", savedUser.getId());
+
+            // Send welcome email (catch exception so registration doesn't fail)
+            try {
+                emailService.sendWelcomeEmail(user.getEmail(), user.getFullName());
+            } catch (Exception e) {
+                log.warn("Welcome email could not be sent: {}", e.getMessage());
+                // Registration still succeeds
+            }
+
+            return "User registered successfully!";
+        } catch (Exception e) {
+            log.error("Registration failed for email: {}", user.getEmail(), e);
+            throw new RuntimeException("Registration failed: " + e.getMessage());
+        }
     }
 
+    // ==============================
+    // GET ALL USERS
+    // ==============================
     @GetMapping("/all")
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
+    // ==============================
+    // UPDATE USER ROLE
+    // ==============================
     @PutMapping("/{id}/role")
     public User updateUserRole(@PathVariable Long id, @RequestBody String role) {
         User user = userRepository.findById(id)
@@ -60,12 +93,17 @@ public class UserController {
         return userRepository.save(user);
     }
 
+    // ==============================
+    // DELETE USER
+    // ==============================
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable Long id) {
         userRepository.deleteById(id);
     }
 
-    // ---------- Theme Preference Endpoint ----------
+    // ==============================
+    // UPDATE THEME PREFERENCE
+    // ==============================
     @PutMapping("/theme")
     public User updateTheme(@RequestBody Map<String, String> request, Authentication auth) {
         String email = auth.getName();
@@ -78,7 +116,9 @@ public class UserController {
         return userRepository.save(user);
     }
 
-    // ---------- Password Reset Endpoints ----------
+    // ==============================
+    // FORGOT PASSWORD - request reset
+    // ==============================
     @PostMapping("/forgot-password")
     public String forgotPassword(@RequestBody ResetRequest request) {
         User user = userRepository.findByEmail(request.getEmail())
@@ -95,6 +135,9 @@ public class UserController {
         return "Password reset link has been sent to your email.";
     }
 
+    // ==============================
+    // RESET PASSWORD - confirm token
+    // ==============================
     @PostMapping("/reset-password")
     public String resetPassword(@RequestBody PasswordResetDto resetDto) {
         User user = userRepository.findByResetToken(resetDto.getToken())
