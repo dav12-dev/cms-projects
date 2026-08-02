@@ -17,9 +17,9 @@ WORKDIR /app
 # Copy the JAR from the build stage
 COPY --from=build /app/target/*.jar app.jar
 
-# Expose port for documentation
+# Expose port (optional, for documentation)
 EXPOSE 8080
 
 # Run the application with the PORT environment variable from Render
-# This is the key fix - it uses Render's dynamic port
+# This ensures the app binds to the correct port (either Render's PORT or 8080 locally)
 ENTRYPOINT ["sh", "-c", "java -jar app.jar --server.port=${PORT:-8080}"]
