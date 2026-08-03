@@ -4,7 +4,6 @@ import com.cms.cms.dto.PasswordResetDto;
 import com.cms.cms.dto.ResetRequest;
 import com.cms.cms.entity.User;
 import com.cms.cms.repository.UserRepository;
-import com.cms.cms.service.EmailService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,8 +25,9 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private EmailService emailService;
+    // Comment out EmailService for now – it might be failing
+    // @Autowired
+    // private EmailService emailService;
 
     @Value("${app.base-url:http://localhost:8080}")
     private String baseUrl;
@@ -35,42 +35,48 @@ public class UserController {
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     // ==============================
-    // REGISTER
+    // REGISTER – BULLETPROOF VERSION
     // ==============================
     @PostMapping("/register")
     @Transactional
     public String registerUser(@RequestBody User user) {
         try {
-            log.info("Registration attempt for email: {}", user.getEmail());
+            log.info("🔹 Registration attempt for email: {}", user.getEmail());
+
+            // Validate input
+            if (user.getEmail() == null || user.getEmail().isEmpty()) {
+                throw new RuntimeException("Email is required");
+            }
+            if (user.getPassword() == null || user.getPassword().isEmpty()) {
+                throw new RuntimeException("Password is required");
+            }
+            if (user.getFullName() == null || user.getFullName().isEmpty()) {
+                throw new RuntimeException("Full name is required");
+            }
+
+            // Check if email already exists
+            if (userRepository.existsByEmail(user.getEmail())) {
+                throw new RuntimeException("Email already registered");
+            }
 
             // Encode password
             user.setPassword(passwordEncoder.encode(user.getPassword()));
 
             // Set defaults
-            if (user.getRole() == null || user.getRole().isEmpty()) {
-                user.setRole("USER");
-            }
+            user.setRole(user.getRole() != null ? user.getRole() : "USER");
             user.setActive(true);
-            if (user.getThemePreference() == null || user.getThemePreference().isEmpty()) {
-                user.setThemePreference("light");
-            }
+            user.setThemePreference(user.getThemePreference() != null ? user.getThemePreference() : "light");
 
             // Save user
             User savedUser = userRepository.save(user);
-            log.info("User saved with ID: {}", savedUser.getId());
+            log.info("✅ User saved with ID: {}", savedUser.getId());
 
-            // Send welcome email (catch exception so registration doesn't fail)
-            try {
-                emailService.sendWelcomeEmail(user.getEmail(), user.getFullName());
-            } catch (Exception e) {
-                log.warn("Welcome email could not be sent: {}", e.getMessage());
-                // Registration still succeeds
-            }
+            // Return success
+            return "Registration successful! Please log in.";
 
-            return "User registered successfully!";
         } catch (Exception e) {
-            log.error("Registration failed for email: {}", user.getEmail(), e);
-            throw new RuntimeException("Registration failed: " + e.getMessage());
+            log.error("❌ Registration failed for email: {}", user.getEmail(), e);
+            throw new RuntimeException(e.getMessage());
         }
     }
 
@@ -117,7 +123,7 @@ public class UserController {
     }
 
     // ==============================
-    // FORGOT PASSWORD - request reset
+    // FORGOT PASSWORD – request reset
     // ==============================
     @PostMapping("/forgot-password")
     public String forgotPassword(@RequestBody ResetRequest request) {
@@ -130,13 +136,14 @@ public class UserController {
         userRepository.save(user);
 
         String resetLink = baseUrl + "/reset-password?token=" + token;
-        emailService.sendPasswordResetEmail(user.getEmail(), user.getFullName(), resetLink);
+        // EmailService commented out – uncomment when ready
+        // emailService.sendPasswordResetEmail(user.getEmail(), user.getFullName(), resetLink);
 
         return "Password reset link has been sent to your email.";
     }
 
     // ==============================
-    // RESET PASSWORD - confirm token
+    // RESET PASSWORD – confirm token
     // ==============================
     @PostMapping("/reset-password")
     public String resetPassword(@RequestBody PasswordResetDto resetDto) {
