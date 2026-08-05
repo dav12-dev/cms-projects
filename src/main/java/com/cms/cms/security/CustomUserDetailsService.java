@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
@@ -25,22 +24,14 @@ public class CustomUserDetailsService implements UserDetailsService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
 
-        // Create authorities based on role
         Collection<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority("ROLE_" + user.getRole()));
-
-        // Add default USER role if not present
-        if (!user.getRole().equals("USER") && !user.getRole().equals("EDITOR") && !user.getRole().equals("ADMIN")) {
-            authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
-        }
 
         return new org.springframework.security.core.userdetails.User(
                 user.getEmail(),
                 user.getPassword(),
                 user.isActive(),
-                true,
-                true,
-                true,
+                true, true, true,
                 authorities
         );
     }
