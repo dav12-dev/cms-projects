@@ -23,7 +23,7 @@ public class SecurityConfig {
     @Bean
     public UserDetailsService userDetailsService() {
         InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
-        manager.createUser(User.withUsername("yeboahdavrash1@gmail.com")
+        manager.createUser(User.withUsername("admin")
                 .password(passwordEncoder().encode("admin123"))
                 .roles("ADMIN")
                 .build());
@@ -33,7 +33,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable())
+                .csrf(csrf -> csrf.disable())  // <-- Disabled for simplicity
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/login", "/register", "/css/**", "/js/**").permitAll()
                         .anyRequest().authenticated()
