@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html>
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -155,9 +155,8 @@
         <h3>📝 <span>CMS</span></h3>
         <p>Content Management System</p>
     </div>
-    <!-- 👇 Changed to th:action and added CSRF input (even though it's disabled, it's safe) -->
-    <form th:action="@{/login}" method="post">
-        <input type="hidden" name="_csrf" th:value="${_csrf.token}" />
+    <!-- Original form: no Thymeleaf, no CSRF token -->
+    <form action="/login" method="post">
         <div class="mb-3">
             <div class="input-group">
                 <span class="input-group-text"><i class="fas fa-envelope"></i></span>
