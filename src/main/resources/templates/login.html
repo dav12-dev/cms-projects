@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -155,7 +155,10 @@
         <h3>📝 <span>CMS</span></h3>
         <p>Content Management System</p>
     </div>
-    <form action="/login" method="post">
+    <form th:action="@{/login}" method="post">
+        <!-- CSRF Token (required for Spring Security) -->
+        <input type="hidden" name="_csrf" th:value="${_csrf.token}" />
+
         <div class="mb-3">
             <div class="input-group">
                 <span class="input-group-text"><i class="fas fa-envelope"></i></span>
